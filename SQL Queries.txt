@@ -1,0 +1,11 @@
+CREATE TABLE user_account (
+  id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  username VARCHAR(255) NOT NULL UNIQUE,
+  name VARCHAR(255) NOT NULL,
+  email VARCHAR(255) NOT NULL,
+  password_hash VARCHAR(255) NOT NULL,
+  question VARCHAR(255) NULL,
+  answer VARCHAR(255) NULL
+);
+
+
