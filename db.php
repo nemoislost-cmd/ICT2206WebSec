@@ -2,8 +2,8 @@
 
 $host = "localhost"; // database hostname
 $dbname = "authreact"; // database name
-$username = "root"; // database username
-$password = ""; // database password
+$username = "authreact_dba"; // database username
+$password = "Adapt_2_survive"; // database password
 
 // connect to the database using PDO
 try {

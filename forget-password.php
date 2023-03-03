@@ -21,7 +21,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     if (empty($error_msg)){
         
         // Check if the username exists in the database
-        $sql = "SELECT email FROM user_account WHERE username = :username";
+        $sql = "SELECT email FROM user_accounts WHERE username = :username";
 
         if($stmt = $pdo->prepare($sql)){
 
@@ -43,15 +43,15 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                     
                     // Hash the temporary password
                     $hashed_password = password_hash($temp_password, PASSWORD_DEFAULT);
-                    echo $hashed_password;
+                    
                     // Update the user's password in the database
-                    $sql = "UPDATE user_account SET password_hash =(:password_hash) WHERE username = :username";
+                    $sql = "UPDATE user_accounts SET password =(:password) WHERE username = :username";
 
                     if($stmt2 = $pdo->prepare($sql)){
 
                         // Bind the value of username to the prepared statement 
                         $stmt2->bindValue(":username", $username, PDO::PARAM_STR);
-                        $stmt2->bindValue(":password_hash", $hashed_password, PDO::PARAM_STR);
+                        $stmt2->bindValue(":password", $hashed_password, PDO::PARAM_STR);
 
                         // Attempt to execute the prepared statement
                         if($stmt2->execute()){

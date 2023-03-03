@@ -1,9 +1,15 @@
-CREATE TABLE user_account (
+CREATE DATABASE authreact;
+CREATE USER 'authreact_dba'@'localhost' IDENTIFIED BY 'Adapt_2_survive';
+GRANT ALL PRIVILEGES ON authreact.* TO 'authreact_dba'@'localhost';
+
+USE authreact;
+
+CREATE TABLE user_accounts (
   id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
   username VARCHAR(255) NOT NULL UNIQUE,
   name VARCHAR(255) NOT NULL,
   email VARCHAR(255) NOT NULL,
-  password_hash VARCHAR(255) NOT NULL,
+  password VARCHAR(255) NOT NULL,
   question VARCHAR(255) NULL,
   answer VARCHAR(255) NULL
 );

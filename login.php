@@ -35,7 +35,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   if (empty($username_err) && empty($password_err)) {
 
     // Prepare a select statement
-    $sql = "SELECT username, password_hash FROM user_account WHERE username = :username";
+    $sql = "SELECT username, password FROM user_accounts WHERE username = :username";
 
     if ($stmt = $pdo->prepare($sql)) {
       // Bind the value of username to the prepared statement 
@@ -48,7 +48,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
           // Fetch the result
           $row = $stmt->fetch(PDO::FETCH_ASSOC);
           $username = $row["username"];
-          $password_hash = $row["password_hash"];
+          $password_hash = $row["password"];
 
           // Verify password
           if (password_verify($password, $password_hash)) {

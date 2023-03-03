@@ -13,7 +13,7 @@ if (!isset($_SESSION["username"])) {
 
 // Get user's security question and answer from database
 $username = $_SESSION["username"];
-$sql = "SELECT question, answer FROM user_account WHERE username = :username";
+$sql = "SELECT question, answer FROM user_accounts WHERE username = :username";
 $stmt = $pdo->prepare($sql);
 $stmt->bindValue(":username", $username, PDO::PARAM_STR);
 

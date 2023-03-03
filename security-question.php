@@ -18,7 +18,7 @@ if (!isset($_SESSION["username"])) {
 $username = $_SESSION["username"];
 
 // Prepare a select statement
-$sql = "SELECT question, answer FROM user_account WHERE username = :username";
+$sql = "SELECT question, answer FROM user_accounts WHERE username = :username";
 $stmt = $pdo->prepare($sql);
 
 // Bind the value of username to the prepared statement 
@@ -87,7 +87,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 		$error_message = "Please enter an answer";
 	}else {
         // Prepare an update statement
-		$sql = "UPDATE user_account SET question = :question, answer = :answer WHERE username = :username";
+		$sql = "UPDATE user_accounts SET question = :question, answer = :answer WHERE username = :username";
 
 		if ($stmt = $pdo->prepare($sql)) {
   			// Bind parameters to the prepared statement

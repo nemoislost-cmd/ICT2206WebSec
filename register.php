@@ -23,7 +23,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email = trim($_POST["email"]);
 
     // Prepare a select statement to check if the email already exists
-    $sql = "SELECT username FROM user_account WHERE email = :email";
+    $sql = "SELECT username FROM user_accounts WHERE email = :email";
 
     if ($stmt = $pdo->prepare($sql)) {
       // Bind the value of email to the prepared statement
@@ -77,14 +77,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $password_hash = password_hash($password, PASSWORD_DEFAULT);
 
     // Prepare an insert statement
-    $sql = "INSERT INTO user_account (username, name, email, password_hash) VALUES (:username, :name, :email, :password_hash)";
+    $sql = "INSERT INTO user_accounts (username, name, email, password) VALUES (:username, :name, :email, :password)";
 
     if ($stmt = $pdo->prepare($sql)) {
       // Bind the values to the prepared statement
       $stmt->bindValue(":username", $username, PDO::PARAM_STR);
       $stmt->bindValue(":name", $name, PDO::PARAM_STR);
       $stmt->bindValue(":email", $email, PDO::PARAM_STR);
-      $stmt->bindValue(":password_hash", $password_hash, PDO::PARAM_STR);
+      $stmt->bindValue(":password", $password_hash, PDO::PARAM_STR);
 
       // Attempt to execute the prepared statement
       if ($stmt->execute()) {
