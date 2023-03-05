@@ -3,7 +3,6 @@
     <head>
         <meta charset="UTF-8">
         <title>Reaction Time Test</title>
-<<<<<<< Updated upstream
         <style>
             button {
         border: none;
@@ -89,8 +88,6 @@ body {
 }
 
         </style>
-=======
->>>>>>> Stashed changes
     </head>
     <body>
         <div class ="button-container">

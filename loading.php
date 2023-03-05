@@ -7,7 +7,6 @@
 </div>
 
 <?php
-<<<<<<< Updated upstream
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
   $data = json_decode($_REQUEST["data"], true);
@@ -20,7 +19,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   print_r($curr_device);
 }
 
-=======
 session_start();
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
   $data = json_decode($_REQUEST["data"], true);
@@ -32,7 +30,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 }
 
 insertColorData($color_data,$color_data_timestamp,$curr_device);
->>>>>>> Stashed changes
 $mean = calculate_mean($color_data);
 $max = calculate_max($color_data);
 $min = calculate_min($color_data);
@@ -94,9 +91,6 @@ function calculateMarginOfError($data, $confidenceLevel) {
         $marginOfError = $tScore * $standardError;
     }
     $marginOfErrorPercent = ($marginOfError / $mean) * 100;
-<<<<<<< Updated upstream
-    echo "Margin of error: " . round($marginOfErrorPercent, 2) . "%";
-=======
      echo "Margin of error: " . round($marginOfErrorPercent, 2) . "%";
     return $marginOfErrorPercent;
    
@@ -122,7 +116,6 @@ function getZScore($confidenceLevel) {
 
 function getTScore($confidenceLevel, $degreesOfFreedom) {
     $alpha = 1 - $confidenceLevel;
-<<<<<<< Updated upstream
     $tDistribution = new TDistribution($degreesOfFreedom);
     return $tDistribution->getInverseCDF(1 - ($alpha / 2));
 }
@@ -162,9 +155,6 @@ function insertColorData($color_data,$color_data_timestamp,$curr_device){
     $max = calculate_max($color_data);
     $min = calculate_min($color_data);
     $median = calculate_median($color_data);
-<<<<<<< Updated upstream
-    calculateMarginOfError($color_data, 0.95);
-=======
     $margin = calculateMarginOfError($color_data, 0.95);
     $sd = calculate_sd($color_data);
     $value1 = $_SESSION["username"];
