@@ -24,7 +24,7 @@ session_start();
                     <input class="form-control" type="password" id="pwd" required name="pwd" placeholder="Enter password">
                 </div>
                 <div class="form-group">
-                    <button onClick="login()" class="btn btn-primary" type="submit">Login</button>
+                    <button class="btn btn-primary" type="submit">Login</button>
                 </div>
             </form>
   </span>

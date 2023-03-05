@@ -1,5 +1,5 @@
 <?php
-$name = $pwd_hashed = $email = $errorMsg = "";
+$username = $name = $pwd_hashed = $email = $errorMsg = "";
 $success = true;
 
 if (empty($_POST["email"]))
@@ -37,7 +37,7 @@ function sanitize_input($data)
 */
 function authenticateUser()
 {
-    global $name, $email, $pwd_hashed, $errorMsg, $success;
+    global $username, $name, $email, $pwd_hashed, $errorMsg, $success;
     // Create database connection.
     $config = parse_ini_file('../private/db-config.ini');
     $conn = new mysqli($config['servername'], $config['username'],
@@ -62,6 +62,7 @@ function authenticateUser()
             // Note that email field is unique, so should only have
             // one row in the result set.
             $row = $result->fetch_assoc();
+            $username = $row["username"];
             $name = $row["name"];
             $pwd_hashed = $row["password"];
             // Check if the password matches:
@@ -75,6 +76,7 @@ function authenticateUser()
             else
             {
                 session_start();
+                $_SESSION["username"]= $username;
                 $_SESSION["name"]= $name;
             }
         }
@@ -88,7 +90,195 @@ function authenticateUser()
     $conn->close();
 }
 
+function checkExistingData()
+{
+    global $username, $errorMsg, $success;
+    // Create database connection.
+    $config = parse_ini_file('../private/db-config.ini');
+    $conn = new mysqli($config['servername'], $config['username'],
+    $config['password'], $config['dbname']);
+    // Check connection
+    if ($conn->connect_error)
+    {
+        $errorMsg = "Connection failed: " . $conn->connect_error;
+        $success = false;
+    }
+    else
+    {
+        // Prepare the statement:
+        $stmt = $conn->prepare("SELECT captcha_data.username, color_data.username 
+            FROM captcha_data 
+            INNER JOIN color_data
+            ON captcha_data.username = color_data.username
+            WHERE color_data.username=?");
+        // Bind & execute the query statement:
+        $stmt->bind_param("s", $username);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        if ($result->num_rows < 1)
+        {
+            $errorMsg = "MultiAuth data not found!";
+            $success = false;
+        }
+        $stmt->close();
+    }
+    $conn->close();
+}
+
+function checkDayData()
+{
+    global $username, $errorMsg, $success;
+    // Create database connection.
+    $config = parse_ini_file('../private/db-config.ini');
+    $conn = new mysqli($config['servername'], $config['username'],
+    $config['password'], $config['dbname']);
+    // Check connection
+    if ($conn->connect_error)
+    {
+        $errorMsg = "Connection failed: " . $conn->connect_error;
+        $success = false;
+    }
+    else
+    {
+        // Prepare the statement:
+        $stmt = $conn->prepare("SELECT captcha_data.username, color_data.username 
+            FROM captcha_data 
+            INNER JOIN color_data
+            ON captcha_data.username = color_data.username
+            WHERE color_data.test_period='day'
+            AND captcha_data.test_period='day'
+            AND color_data.username=?");
+        // Bind & execute the query statement:
+        $stmt->bind_param("s", $username);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        if ($result->num_rows < 1)
+        {
+            $errorMsg = "Day data not found!";
+            $success = false;
+        }
+        $stmt->close();
+    }
+    $conn->close();
+}
+
+function checkNightData()
+{
+    global $username, $errorMsg, $success;
+    // Create database connection.
+    $config = parse_ini_file('../private/db-config.ini');
+    $conn = new mysqli($config['servername'], $config['username'],
+    $config['password'], $config['dbname']);
+    // Check connection
+    if ($conn->connect_error)
+    {
+        $errorMsg = "Connection failed: " . $conn->connect_error;
+        $success = false;
+    }
+    else
+    {
+        // Prepare the statement:
+        $stmt = $conn->prepare("SELECT captcha_data.username, color_data.username 
+            FROM captcha_data 
+            INNER JOIN color_data
+            ON captcha_data.username = color_data.username
+            WHERE color_data.test_period='night'
+            AND captcha_data.test_period='night'
+            AND color_data.username=?");
+        // Bind & execute the query statement:
+        $stmt->bind_param("s", $username);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        if ($result->num_rows < 1)
+        {
+            $errorMsg = "Night data not found!";
+            $success = false;
+        }
+        $stmt->close();
+    }
+    $conn->close();
+}
+
+function checkTrackpadData()
+{
+    global $username, $errorMsg, $success;
+    // Create database connection.
+    $config = parse_ini_file('../private/db-config.ini');
+    $conn = new mysqli($config['servername'], $config['username'],
+    $config['password'], $config['dbname']);
+    // Check connection
+    if ($conn->connect_error)
+    {
+        $errorMsg = "Connection failed: " . $conn->connect_error;
+        $success = false;
+    }
+    else
+    {
+        // Prepare the statement:
+        $stmt = $conn->prepare("SELECT captcha_data.username, color_data.username 
+            FROM captcha_data 
+            INNER JOIN color_data
+            ON captcha_data.username = color_data.username
+            WHERE color_data.device='trackpad'
+            AND captcha_data.device='trackpad'
+            AND color_data.username=?");
+        // Bind & execute the query statement:
+        $stmt->bind_param("s", $username);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        if ($result->num_rows < 2)
+        {
+            $errorMsg = "Trackpad data incomplete!";
+            $success = false;
+        }
+        $stmt->close();
+    }
+    $conn->close();
+}
+
+function checkMouseData()
+{
+    global $username, $errorMsg, $success;
+    // Create database connection.
+    $config = parse_ini_file('../private/db-config.ini');
+    $conn = new mysqli($config['servername'], $config['username'],
+    $config['password'], $config['dbname']);
+    // Check connection
+    if ($conn->connect_error)
+    {
+        $errorMsg = "Connection failed: " . $conn->connect_error;
+        $success = false;
+    }
+    else
+    {
+        // Prepare the statement:
+        $stmt = $conn->prepare("SELECT captcha_data.username, color_data.username 
+            FROM captcha_data 
+            INNER JOIN color_data
+            ON captcha_data.username = color_data.username
+            WHERE color_data.device='mouse'
+            AND captcha_data.device='mouse'
+            AND color_data.username=?");
+        // Bind & execute the query statement:
+        $stmt->bind_param("s", $username);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        if ($result->num_rows < 2)
+        {
+            $errorMsg = "Mouse data incomplete!";
+            $success = false;
+        }
+        $stmt->close();
+    }
+    $conn->close();
+}
+
 authenticateUser();
+checkExistingData();
+checkDayData();
+checkNightData();
+checkTrackpadData();
+checkMouseData();
 ?>
 <html>
     <head>
@@ -107,7 +297,10 @@ authenticateUser();
             {
                 echo "<h2>Login successful!</h2>";
                 echo "<h4>Welcome back, " . $name . ".</h4>";
-                echo "<a href='logout.php' class='btn btn-success'>Proceed to Logout</a>";
+                echo "<h4>Choose either trackpad or mouse for your next step.</h4>";
+                echo "<a href='trackpad.php' class='btn btn-success'>Trackpad</a>";
+                echo "<br>";
+                echo "<a href='mouse.php' class='btn btn-success'>Mouse</a>";
                 echo "<br>";
             }
             else
@@ -115,7 +308,7 @@ authenticateUser();
                 echo "<h2>Oops!</h2>";
                 echo "<h4>The following errors were detected:</h4>";
                 echo "<p>" . $errorMsg . "</p>";
-                echo "<a href='index.php' class='btn btn-warning'>Return to Home</a>";
+                echo "<a href='logout.php' class='btn btn-warning'>Return to Home</a>";
                 echo "<br>";
             }
             ?>
