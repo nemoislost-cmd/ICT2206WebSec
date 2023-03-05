@@ -193,8 +193,7 @@ function insertColorData($color_data,$color_data_timestamp,$curr_device){
     die("Connection failed: " . mysqli_connect_error());
     }
     echo "Connected successfully <br>";
-<<<<<<< Updated upstream
-=======
+
 
     
    $stmt1 = $conn->prepare("INSERT INTO color_testcase (username,T1,T2,T3,T4,T5,timestamp,test_period,device) VALUES (?,?,?,?,?,?,?,?,?)");
@@ -208,7 +207,7 @@ function insertColorData($color_data,$color_data_timestamp,$curr_device){
     echo "New record created successfully in color_data";
     mysqli_close($conn);
     
->>>>>>> Stashed changes
+
     
 }
 
