@@ -32,14 +32,13 @@ function saveToDB()
     else
     {
         $timestamp = date('Y-m-d H:i:s');
-        $result = "test";
-        $captcha = 0.5;
-        $color = 0.5;
+        $result = $_SESSION["result"];
+        $captcha = 0;
         // Prepare the statement:
         $stmt = $conn->prepare("INSERT INTO login_history (username, timestamp, 
-        device, result, answer, color_time, captcha_time) VALUES (?, ?, ?, ?, ?, ?, ?)");
+        device, test_period, color_time, captcha_time, answer, result) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
         // Bind & execute the query statement:
-        $stmt->bind_param("sssssii", $_SESSION["username"], $timestamp, $_SESSION["device"], $result, $answer, $captcha, $color);
+        $stmt->bind_param("ssssiiss", $_SESSION["username"], $timestamp, $_SESSION["device"], $_SESSION["period"], $_SESSION["color_time"], $captcha, $answer, $result);
         if (!$stmt->execute())
         {
             $errorMsg = "Execute failed: (" . $stmt->errno . ") " . $stmt->error;

@@ -64,6 +64,12 @@ getSecurityQuestion();
                 echo "<h4> " . $question . "</h4>";
                 echo "<h4>Please key in the security answer.</h4>";
                 echo "<br>";
+                echo '<form action="submit.php" method="post">';
+                echo '<div class="form-group">';
+                echo '<label for="email">Answer:</label>';
+                echo '<input class="form-control" type="text" id="ans" required name="ans" placeholder="Enter answer"></div>';
+                echo '<div class="form-group">';
+                echo '<button class="btn btn-primary" type="submit">Submit</button></div></form>';
             }
             else
             {
@@ -71,18 +77,9 @@ getSecurityQuestion();
                 echo "<h4>The following errors were detected:</h4>";
                 echo "<p>" . $errorMsg . "</p>";
                 echo "<a href='logout.php' class='btn btn-warning'>Proceed to Logout</a>";
-                echo "<br>";
+                echo "<br>";           
             }
             ?>
-            <form action="submit.php" method="post">
-                <div class="form-group">
-                    <label for="email">Answer:</label>
-                    <input class="form-control" type="text" id="ans" required name="ans" placeholder="Enter answer">
-                </div>
-                <div class="form-group">
-                    <button class="btn btn-primary" type="submit">Submit</button>
-                </div>
-            </form>
             </span>
             </div>
             </div>
