@@ -65,6 +65,7 @@ function checkMarginRange(){
     else {
         $errorMsg = "Not within acceptable range.";
         $success = false;
+        $_SESSION["color_time"] = $color_data;
         $_SESSION["result"]= "fail";
     }
 }
