@@ -1,7 +1,9 @@
 <?php
 session_start();
 
-if (isset($_SESSION['reminderMail'])) {
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    
+    if (isset($_SESSION['reminderMail'])) {
     echo "Mail has already been sent";
 } else {
         $servername = "localhost";
@@ -44,13 +46,14 @@ if (isset($_SESSION['reminderMail'])) {
         
         if($mail->send()){
             // Redirect to the login page
-            echo "Mail sent successfully.";
             $_SESSION['reminderMail']=1;
+            $_SESSION['startCountdown']=0;
             exit();
         } else {
             $email_err = "Error: " . $mail->ErrorInfo;
         }
  
+}
 }
 
 

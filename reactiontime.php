@@ -243,12 +243,13 @@
                          if (counter <= 4){
                              console.log("working");
                              data.push(reactionTime);
+                             resetState(counter,reactionTime);
                              //setFinishState(counter,reactionTime);
                          }else if (counter === 5) {
                              data.push(reactionTime);
                              setFinishState(counter,reactionTime);
                          }
-                         resetState(counter,reactionTime);
+                         //resetState(counter,reactionTime);
                          
                      };
                 }, time);

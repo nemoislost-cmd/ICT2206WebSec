@@ -3,7 +3,9 @@
 
 session_start();
 
- $servername = "localhost";
+if (isset($_SESSION['startCountdown'])){
+    if ($_SESSION['startCountdown']==1){
+         $servername = "localhost";
  $username = "admin";
  $password = "123456";
  $dbname = "reaction_time";
@@ -17,12 +19,13 @@ session_start();
     }
 
     $currentUser = $_SESSION['username'];
-    $query = "SELECT futuretimestamp FROM color_testcase WHERE username = '$currentUser'";
+    $query = "SELECT futuretimestamp FROM color_testcase WHERE username = '$currentUser' AND device = 'trackpad'";
     $result = mysqli_query($conn, $query);
     // Check if the query was successful and the countdownDate value was retrieved
     if ($result && mysqli_num_rows($result) > 0) {
         $row = mysqli_fetch_assoc($result);
         $countdownDate = $row['futuretimestamp'];
+        $_SESSION['target_date']= $row['futuretimestamp'];
         
         } else {
        // Handle the case where the countdownDate value was not found
@@ -34,4 +37,8 @@ $remainingTime = $convertedUnixTime - time();
 // Return the remaining time in JSON format
 header('Content-Type: application/json');
 echo json_encode(['remainingTime' => $remainingTime]);
+        
+    }
+}
+
 

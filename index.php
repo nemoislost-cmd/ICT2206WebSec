@@ -113,7 +113,6 @@ h2 {
         $username = "admin";
         $password = "123456";
         $dbname = "reaction_time";
-
     // Create connection
         $conn = mysqli_connect($servername, $username, $password, $dbname);
         $daysql = "SELECT * FROM color_data WHERE username='" . $_SESSION["username"] . "' AND test_period='day' ";
@@ -138,14 +137,33 @@ h2 {
             echo "NIGHT RECORDS PRESENT <br>";
         }
         if ($currentHour >= 7 && $currentHour < 19) {
-         echo "Day Period  <br> ";
+         echo "Currently in Day Period  <br> ";
          $_SESSION['time_period'] = "day";
         } else {
             
-        echo "Night Period <br> ";
+        echo "Currently Night Period <br> ";
         $_SESSION['time_period'] = "night";
         
          } 
+            if (isset($_SESSION['target_date'])){
+                     $targetDate = $_SESSION['target_date'];
+
+// Format the date and time
+            $formattedDate = date('M j, Y g:i A', strtotime($targetDate));
+
+// Check if the target date is between 7am and 7pm
+            $hour = date('H', strtotime($targetDate));
+            if ($hour >= 7 && $hour < 19) {
+            $message = "Day period will be available after $formattedDate";
+            echo $message;
+            } else {
+            $message = "Night period will be available after $formattedDate";
+            echo $message;
+            }       
+            }
+
+            
+
          ?>
         
         </h2>
@@ -277,10 +295,18 @@ h2 {
             <div class="label">SECS</div>
           </div>
         </div>
+        <div class="target-date"></div>
+        <form id="reminderForm" method="post" action="reminderMail.php" style="display:none;">
+        </form>
+
+
 
 
 
 <script>
+    
+ const targetDateElem = document.querySelector(".target-date");
+ 
             
 function checkSessionDay() {
     
@@ -326,8 +352,8 @@ function updateCountdown() {
         hoursElement.textContent = '00';
         minsElement.textContent = '00';
         secsElement.textContent = '00';
-        var xhr2 = new XMLHttpRequest();
-        xhr2.open('GET','reminderMail.php');
+        var form = document.getElementById('reminderForm');
+        form.submit();
       } else {
         var hours = Math.floor(remainingTime / 3600);
         var mins = Math.floor((remainingTime % 3600) / 60);

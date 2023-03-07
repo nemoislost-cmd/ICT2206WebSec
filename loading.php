@@ -180,7 +180,7 @@ function insertColorData($color_data,$color_data_timestamp,$curr_device){
     $value6 = $color_data[4];
     $value7 = date('Y-m-d H:i:s',$color_data_timestamp/1000);
     $tempdate = strtotime($value7);
-    $tempdate+= 12 * 60 * 60;
+    $tempdate+= 12 * 60 * 60 ;
     $targetdate = date('Y-m-d H:i:s', $tempdate);
     $value8 = $_SESSION["time_period"];
     $value9 = $curr_device ;
@@ -213,7 +213,9 @@ function insertColorData($color_data,$color_data_timestamp,$curr_device){
              echo '<form action="reactiontimetrackpad.php"><button type="submit" style="background-color: blue; color: white; padding: 10px;">Next</button></form>';
             
         }else{
-            echo '<form action="index.php"><button type="submit" style="background-color: blue; color: white; padding: 10px;">Finish</button></form>';
+            $_SESSION['startCountdown']=1;
+            echo '<form action="index.php" onsubmit="location.reload()"><button type="submit" style="background-color: blue; color: white; padding: 10px;">Finish</button></form>';
+            
             
         }
     }
@@ -227,7 +229,7 @@ function insertColorData($color_data,$color_data_timestamp,$curr_device){
 }
 
 
-calculateMarginOfError($color_data, 0.95);
+//calculateMarginOfError($color_data, 0.95);
     
 ?>
 
