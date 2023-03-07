@@ -1,53 +1,72 @@
 <html>
-    
+    <link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
     <body>
         <style>
-body{
-    position: absolute;
-    top: 50%;
-    left: 30%;
-    transform: translate(-50%,-50%);
-    background-color: #2a9d8f;
-}
-.progress{
-    position: relative;
-    height: 10px;
-    width: 1110%;
-    border: 10px solid #f4a261;
-    border-radius: 15px;
-}
-.progress .color{
-    position: absolute;
-    background-color: #ffffff;
-    width: 0px;
-    height: 10px;
-    border-radius: 15px;
-    animation: progres 4s infinite linear;    
-}
-@keyframes progres{
-    0%{
-      width: 0%;
+    body {
+      background-color: white;
+      font-family: "Roboto", sans-serif;
     }
-    25%{
+    h1 {
+      text-align: center;
+      font-size: 2em;
+      margin-top: 2em;
+    }
+    .progress {
+      position: relative;
+      height: 10px;
+      width: 80%;
+      margin: 0 auto;
+      border: 2px solid #ccc;
+      border-radius: 15px;
+      background-color: #f5f5f5;
+    }
+    .progress .color {
+      position: absolute;
+      background-color: #2a9d8f;
+      width: 0px;
+      height: 10px;
+      border-radius: 15px;
+      animation: progress 4s infinite linear;
+    }
+    @keyframes progress {
+      0% {
+        width: 0%;
+      }
+      25% {
         width: 50%;
-    }
-    50%{
+      }
+      50% {
         width: 75%;
-    }
-    75%{
+      }
+      75% {
         width: 85%;
-    }
-    100%{
+      }
+      100% {
         width: 100%;
+      }
     }
-};
+    button[type="submit"] {
+      display: block;
+      margin: 2em auto;
+      background-color: blue;
+      color: white;
+      font-size: 1.5em;
+      padding: 1em;
+      border-radius: 10px;
+    }
+    img {
+  display: block;
+  margin: 0 auto 2em;
+}
 
 
 
         </style>
-<div class="progress">
-  <div class="color"></div>
-</div>
+<h1>Calibration in progress... Click the button to proceed!</h1>
+  <div class="progress">
+    <div class="color"></div>
+  </div>
+<img src="images/ice-bear.png" alt="placeholder" width="400px">
 
 <?php
 
@@ -140,7 +159,16 @@ function getZScore($confidenceLevel) {
 
 
 
-
+function calculateLowerMargin($min, $margin){ 
+    $lower_margin = $min - ($margin / 100 * $min); 
+    $lower_margin_rounded = round($lower_margin, 0);
+    return $lower_margin_rounded; 
+} 
+function calculateUpperMargin($max, $margin){ 
+    $upper_margin = $max + ($margin / 100 * $max);
+    $upper_margin_rounded = round($upper_margin, 0);
+    return $upper_margin_rounded; 
+} 
 
 function calculate_sd($arr) {
     // calculate the mean of the array
@@ -171,6 +199,16 @@ function insertColorData($color_data,$color_data_timestamp,$curr_device){
     $min = calculate_min($color_data);
     $median = calculate_median($color_data);
     $margin = calculateMarginOfError($color_data, 0.95);
+    $lower_margin = calculateLowerMargin($min, $margin); 
+    $upper_margin = calculateUpperMargin($max, $margin); 
+    echo $min;
+    echo "<br>";
+    echo $max;
+     echo "<br>";
+    echo $lower_margin;
+     echo "<br>";
+    echo $upper_margin;
+     echo "<br>";
     $sd = calculate_sd($color_data);
     $value1 = $_SESSION["username"];
     $value2 = $color_data[0];
@@ -205,9 +243,8 @@ function insertColorData($color_data,$color_data_timestamp,$curr_device){
    $stmt1->bind_param("siiiiissss", $value1, $value2, $value3, $value4, $value5, $value6, $value7, $value8, $value9,$targetdate);
     // Set parameters and execute
     $stmt1->execute();
-    $stmt2 = $conn->prepare("INSERT INTO color_data (username,mean,median,test_period,sd,lower,upper,margin,device) VALUES (?,?,?,?,?,?,?,?,?)");
-    $stmt2->bind_param("siisiiiis", $value1, $mean, $median, $value8, $sd, $min, $max, $margin, $value9);
-    $stmt2->execute();
+$stmt2 = $conn->prepare("INSERT INTO color_data (username,mean,median,test_period,sd,lower,upper,margin,device,lower_margin,upper_margin) VALUES (?,?,?,?,?,?,?,?,?,?,?)");     
+    $stmt2->bind_param("siisiiiisii", $value1, $mean, $median, $value8, $sd, $min, $max, $margin, $value9, $lower_margin, $upper_margin);     $stmt2->execute();
     if (isset($_SESSION["curr_device"])){
         if ($_SESSION["curr_device"] == "mouse"){
              echo '<form action="reactiontimetrackpad.php"><button type="submit" style="background-color: blue; color: white; padding: 10px;">Next</button></form>';
