@@ -51,20 +51,18 @@ function test_input($data) {
 
 // Retrieve questions from API if not already stored in session variable
 if (!isset($_SESSION["List of Questions"])) {
-    // API URL
-    $url = "https://opentdb.com/api.php?amount=10&difficulty=easy&type=multiple";
+    
+  // Retrieve the questions from the database
+  $sql = "SELECT question FROM security_questions";
+  $stmt = $pdo->prepare($sql);
+  $stmt->execute();
+  $questions = $stmt->fetchAll(PDO::FETCH_COLUMN);
 
-    // Retrieve questions from API
-    $response = file_get_contents($url);
-    $data = json_decode($response, true);
-    $questions = array_column($data["results"], "question");
-
-    // Shuffle questions
-    shuffle($questions);
+  // Shuffle the questions
+  shuffle($questions);
 
     // Add 3 question into the list stored inside the session
     $_SESSION["List of Questions"] = $selected_questions = array_slice($questions, 0, 3);
-
 }
 
 // Check if form is submitted
@@ -82,7 +80,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 	// Check if selected question matches one of the three listed questions
     if (!in_array( test_input($selected_question) ,$_SESSION["List of Questions"])) {
-        $error_message = "Questions are already fixed, do not change it.";
+        //$error_message = "Questions are already fixed, do not change it.";
     } elseif (empty($user_answer)){
 		$error_message = "Please enter an answer";
 	}else {
@@ -170,7 +168,7 @@ if (isset($error_message)){
               </div>
             <?php } ?>
             <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
-              <div class="form-group my-4">
+               <div class="form-group my-4">
                 <label for="question">Select a Security Question:</label>
                 <select class="form-select" id="question" name="question">
                   <?php foreach ($selected_questions as $question) { ?>

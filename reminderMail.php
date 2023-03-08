@@ -51,6 +51,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             exit();
         } else {
             $email_err = "Error: " . $mail->ErrorInfo;
+            echo $email_err;
         }
  
 }
