@@ -1,18 +1,12 @@
 <?php
 session_start();
-
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
     
-    if (isset($_SESSION['reminderMail'])) {
+if (isset($_SESSION['reminderMail'])) {
+    header('Content-Type: text/plain');
     echo "Mail has already been sent";
+    
 } else {
-        $servername = "localhost";
-        $username = "admin";
-        $password = "123456";
-        $dbname = "reaction_time";
-
-    // Create connection
-        $conn = mysqli_connect($servername, $username, $password, $dbname);
+        require_once('db_connect.php');
         $query = "SELECT email,name FROM user_accounts WHERE username='" . $_SESSION["username"] . "'";
         $result = mysqli_query($conn, $query);
         if ($result && mysqli_num_rows($result) > 0) {
@@ -24,9 +18,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
        // Handle the case where the countdownDate value was not found
         }   //$countdownDate = time();
         
- require_once "PHPMailer/src/PHPMailer.php";
- require_once "PHPMailer/src/SMTP.php";
- require_once "PHPMailer/src/Exception.php";
+        require_once "PHPMailer/src/PHPMailer.php";
+        require_once "PHPMailer/src/SMTP.php";
+        require_once "PHPMailer/src/Exception.php";
         
         $mail = new PHPMailer\PHPMailer\PHPMailer();
         $mail->isSMTP();
@@ -45,17 +39,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $mail->Body = 'Hello '.$name.',<br><br>12hrs have passed since you last calibrated your data. Please come back to finish the remaining tests for day or night respectively.<br><br>Thank you.';
         
         if($mail->send()){
-            // Redirect to the login page
             $_SESSION['reminderMail']=1;
             $_SESSION['startCountdown']=0;
-            exit();
+           header('Content-Type: text/plain');
+           echo "Mail  sent";
         } else {
             $email_err = "Error: " . $mail->ErrorInfo;
-            echo $email_err;
+            header('Content-Type: text/plain');
+            echo "Mail Error";
         }
+}
  
-}
-}
 
 
-     
+
+

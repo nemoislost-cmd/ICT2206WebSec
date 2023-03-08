@@ -71,18 +71,7 @@ session_start();
     <div class="color"></div>
   </div>
 <img src="images/ice-bear.png" alt="placeholder" width="400px">
-<<<<<<< Updated upstream
 <?php 
-// file for inserting data for captcha data into db
-//include "captcha_insert_data.php";
-=======
-
-<?php
-session_start();
-
-
->>>>>>> Stashed changes
-
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
   $data = json_decode($_REQUEST["data"], true);
   $timestamp = json_decode($_REQUEST["timestamp"], true);
@@ -94,8 +83,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   $captcha_timestap = $timestamp;
 }
 
-insertColorData($color_data,$color_data_timestamp,$curr_device);
-insertCaptchaData($captcha_data,$captcha_timestap,$curr_device);
+require_once('db_connect.php');
+
+
 
 // Calculates the maximum value in an array
 function calculate_max($arr) {
@@ -210,17 +200,7 @@ function insertColorData($color_data,$color_data_timestamp,$curr_device){
     $margin = calculateMarginOfError($color_data, 0.95);
     $lower_margin = calculateLowerMargin($min, $margin); 
     $upper_margin = calculateUpperMargin($max, $margin); 
-<<<<<<< Updated upstream
-//    echo $min;
-//    echo "<br>";
-//    echo $max;
-//     echo "<br>";
-//    echo $lower_margin;
-//     echo "<br>";
-//    echo $upper_margin;
-//     echo "<br>";
-=======
->>>>>>> Stashed changes
+
     $sd = calculate_sd($color_data);
     $value1 = $_SESSION["username"];
     $value2 = $color_data[0];
@@ -234,11 +214,9 @@ function insertColorData($color_data,$color_data_timestamp,$curr_device){
     $targetdate = date('Y-m-d H:i:s', $tempdate);
     $value8 = $_SESSION["time_period"];
     $value9 = $curr_device ;
-    
-    
-    $servername = "localhost";
-    $username = "mel";
-    $password = "password";
+        $servername = "localhost";
+    $username = "admin";
+    $password = "123456";
     $dbname = "reaction_time";
 
     // Create connection
@@ -248,9 +226,6 @@ function insertColorData($color_data,$color_data_timestamp,$curr_device){
     if (!$conn) {
     die("Connection failed: " . mysqli_connect_error());
     }
-
-
-    
    $stmt1 = $conn->prepare("INSERT INTO color_testcase (username,T1,T2,T3,T4,T5,timestamp,test_period,device,futuretimestamp) VALUES (?,?,?,?,?,?,?,?,?,?)");
    $stmt1->bind_param("siiiiissss", $value1, $value2, $value3, $value4, $value5, $value6, $value7, $value8, $value9,$targetdate);
     // Set parameters and execute
@@ -300,10 +275,9 @@ function insertCaptchaData($data,$data_timestamp,$curr_device){
     $targetdate = date('Y-m-d H:i:s', $tempdate);
     $value8 = $_SESSION["time_period"];
     $value9 = $curr_device ;
-    
     $servername = "localhost";
-    $username = "mel";
-    $password = "password";
+    $username = "admin";
+    $password = "123456";
     $dbname = "reaction_time";
 
     // Create connection
@@ -313,14 +287,11 @@ function insertCaptchaData($data,$data_timestamp,$curr_device){
     if (!$conn) {
     die("Connection failed: " . mysqli_connect_error());
     }
-
-
-    
-   $stmt1 = $conn->prepare("INSERT INTO captcha_testcase (username,T1,T2,T3,T4,T5,timestamp,test_period,device,futuretimestamp) VALUES (?,?,?,?,?,?,?,?,?,?)");
-   $stmt1->bind_param("siiiiissss", $value1, $value2, $value3, $value4, $value5, $value6, $value7, $value8, $value9,$targetdate);
+    $stmt1 = $conn->prepare("INSERT INTO captcha_testcase (username,T1,T2,T3,T4,T5,timestamp,test_period,device,futuretimestamp) VALUES (?,?,?,?,?,?,?,?,?,?)");
+     $stmt1->bind_param("siiiiissss", $value1, $value2, $value3, $value4, $value5, $value6, $value7, $value8, $value9,$targetdate);
     // Set parameters and execute
     $stmt1->execute();
-$stmt2 = $conn->prepare("INSERT INTO captcha_data (username,mean,median,test_period,sd,lower,upper,margin,device,lower_margin,upper_margin) VALUES (?,?,?,?,?,?,?,?,?,?,?)");     
+    $stmt2 = $conn->prepare("INSERT INTO captcha_data (username,mean,median,test_period,sd,lower,upper,margin,device,lower_margin,upper_margin) VALUES (?,?,?,?,?,?,?,?,?,?,?)");     
     $stmt2->bind_param("siisiiiisii", $value1, $mean, $median, $value8, $sd, $min, $max, $margin, $value9, $lower_margin, $upper_margin);     $stmt2->execute();
     if (isset($_SESSION["curr_device"])){
         if ($_SESSION["curr_device"] == "mouse"){
@@ -344,7 +315,8 @@ $stmt2 = $conn->prepare("INSERT INTO captcha_data (username,mean,median,test_per
 
 
 //calculateMarginOfError($color_data, 0.95);
-    
+insertColorData($color_data,$color_data_timestamp,$curr_device);
+insertCaptchaData($captcha_data,$captcha_timestap,$curr_device);
 ?>
 
 

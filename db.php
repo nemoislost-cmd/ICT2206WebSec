@@ -1,8 +1,8 @@
 <?php
 
     $host = "localhost";
-    $username = "mel";
-    $password = "password";
+    $username = "admin";
+    $password = "123456";
     $dbname = "reaction_time";
 
 // connect to the database using PDO
