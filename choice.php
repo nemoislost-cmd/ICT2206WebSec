@@ -5,7 +5,7 @@ $success = true;
 // Check if user is logged in
 if (!isset($_SESSION["username"])) {
     // Redirect to login page
-    header("Location: new_login.php");
+    header("Location: login.php");
     exit();
 }
 
@@ -39,7 +39,7 @@ function checkExistingData()
         $result = $stmt->get_result();
         if ($result->num_rows < 1)
         {
-            $errorMsg = "MultiAuth data not found!";
+            $errorMsg = "User data not found!";
             $success = false;
         }
         $stmt->close();
@@ -217,23 +217,18 @@ checkPeriod();
 <html lang="en">
     <head>
     <?php
-        include "new_header.php";
+        include "header.php";
     ?>
     </head>
     <body>
     <?php
-        include "new_nav.php";
+        include "nav.php";
     ?>
   <div class="container">
     <div class="row justify-content-center">
       <div class="col-md-6">
         <div class="card shadow-sm">
-          <div class="card-header">
-            <h4 class="mb-0">Hello</h4>
-          </div>
           <div class="card-body">
-            
-              
               <?php
             if ($success)
             {
@@ -241,10 +236,10 @@ checkPeriod();
                 echo "<h4>Welcome back, " . $_SESSION["name"] . ".</h4>";
                 echo "<h4>Choose either trackpad or mouse for your next step.</h4>";?>
                 <div class="text-center mt-4 pt-1 pb-1">
-                    <a href='new_trackpad.php' class="btn btn-primary btn-block fa-lg gradient-custom-2 mb-3" >Trackpad</a>
+                    <a href='trackpad.php' class="btn btn-primary btn-block fa-lg gradient-custom-2 mb-3" >Trackpad</a>
               </div>
               <div class="text-center mt-4 pt-1 pb-1">
-                    <a href='new_mouse.php' class="btn btn-primary btn-block fa-lg gradient-custom-2 mb-3" >Mouse</a>
+                    <a href='mouse.php' class="btn btn-primary btn-block fa-lg gradient-custom-2 mb-3" >Mouse</a>
               </div>
                 <?php
             }

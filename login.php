@@ -1,324 +1,161 @@
 <?php
-$username = $name = $pwd_hashed = $email = $errorMsg = "";
-$success = true;
+// Start session
+session_start();
 
-if (empty($_POST["email"]))
-{
-    $errorMsg .= "Email is required.<br>";
-    $success = false;
-}
-else
-{
-    $email = sanitize_input($_POST["email"]);
-    // Additional check to make sure e-mail address is well-formed.
-    if (!filter_var($email, FILTER_VALIDATE_EMAIL))
-    {
-        $errorMsg .= "Invalid email format.<br>";
-        $success = false;
-    }
+// Include the database configuration file
+require_once 'db.php';
+
+// Define variables and initialize with empty values
+$username = $password = "";
+$username_err = $password_err = "";
+
+// Checks if the HTTP request method is GET, which is the method used by browsers to request a new page or refresh the current page
+if ($_SERVER["REQUEST_METHOD"] == "GET") {
+  unset($_POST);
 }
 
-if (empty($_POST["pwd"]))
-{
-    $errorMsg .= "Password is required.<br>";
-    $success = false;
-}
+// Processing form data when form is submitted
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
-function sanitize_input($data)
-{
-    $data = trim($data);
-    $data = stripslashes($data);
-    $data = htmlspecialchars($data);
-    return $data;
-}
+  // Validate username
+  if (empty(trim($_POST["username"]))) {
+    $username_err = "Please enter your username.";
+  } else {
+    $username = trim($_POST["username"]);
+  }
 
-/*
-* Helper function to authenticate the login.
-*/
-function authenticateUser()
-{
-    global $username, $name, $email, $pwd_hashed, $errorMsg, $success;
-    // Create database connection.
-    $config = parse_ini_file('../private/db-config.ini');
-    $conn = new mysqli($config['servername'], $config['username'],
-    $config['password'], $config['dbname']);
-    // Check connection
-    if ($conn->connect_error)
-    {
-        $errorMsg = "Connection failed: " . $conn->connect_error;
-        $success = false;
-    }
-    else
-    {
-        // Prepare the statement:
-        $stmt = $conn->prepare("SELECT * FROM user_accounts WHERE 
-        email=?");
-        // Bind & execute the query statement:
-        $stmt->bind_param("s", $email);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        if ($result->num_rows > 0)
-        {
-            // Note that email field is unique, so should only have
-            // one row in the result set.
-            $row = $result->fetch_assoc();
-            $username = $row["username"];
-            $name = $row["name"];
-            $pwd_hashed = $row["password"];
-            // Check if the password matches:
-            if (!password_verify($_POST["pwd"], $pwd_hashed))
-            {
-                // Don't be too specific with the error message - hackers don't
-                // need to know which one they got right or wrong. :)
-                $errorMsg = "Email not found or password doesn't match...";
-                $success = false;
-            }
-            else
-            {
-                session_start();
-                $_SESSION["username"]= $username;
-                $_SESSION["name"]= $name;
-            }
+  // Validate password
+  if (empty(trim($_POST["password"]))) {
+    $password_err = "Please enter your password.";
+  } else {
+    $password = trim($_POST["password"]);
+  }
+
+  // Check input errors before attempting to login
+  if (empty($username_err) && empty($password_err)) {
+
+    // Prepare a select statement
+    $sql = "SELECT username, password, name FROM user_accounts WHERE username = :username";
+
+    if ($stmt = $pdo->prepare($sql)) {
+      // Bind the value of username to the prepared statement 
+      $stmt->bindValue(":username", $username, PDO::PARAM_STR);
+
+      // Attempt to execute the prepared statement
+      if ($stmt->execute()) {
+        // Check if username exists
+        if ($stmt->rowCount() == 1) {
+          // Fetch the result
+          $row = $stmt->fetch(PDO::FETCH_ASSOC);
+          $username = $row["username"];
+          $password_hash = $row["password"];
+          $name = $row["name"];
+
+          // Verify password
+          if (password_verify($password, $password_hash)) {
+            // Password is correct, start a new session
+            session_start();
+
+            // Store data in session variables
+            $_SESSION["loggedin"] = true;
+            $_SESSION["username"] = $username;
+            $_SESSION["name"]= $name;
+
+            // Redirect to home page
+            header("location: choice.php");
+            exit();
+
+          } else {
+            // Display an error message if password is not valid
+            $password_err = "The password you entered was not valid.";
+          }
+        } else {
+          // Display an error message if username doesn't exist
+          $username_err = "No account found with that username.";
         }
-        else
-        {
-            $errorMsg = "Email not found or password doesn't match...";
-            $success = false;
-        }
-        $stmt->close();
-    }
-    $conn->close();
-}
+      } else {
+        echo "Oops! Something went wrong. Please try again later.";
+      }
 
-function checkExistingData()
-{
-    global $username, $errorMsg, $success;
-    // Create database connection.
-    $config = parse_ini_file('../private/db-config.ini');
-    $conn = new mysqli($config['servername'], $config['username'],
-    $config['password'], $config['dbname']);
-    // Check connection
-    if ($conn->connect_error)
-    {
-        $errorMsg = "Connection failed: " . $conn->connect_error;
-        $success = false;
+      // Close statement
+      unset($stmt);
     }
-    else
-    {
-        // Prepare the statement:
-        $stmt = $conn->prepare("SELECT captcha_data.username, color_data.username 
-            FROM captcha_data 
-            INNER JOIN color_data
-            ON captcha_data.username = color_data.username
-            WHERE color_data.username=?");
-        // Bind & execute the query statement:
-        $stmt->bind_param("s", $username);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        if ($result->num_rows < 1)
-        {
-            $errorMsg = "MultiAuth data not found!";
-            $success = false;
-        }
-        $stmt->close();
-    }
-    $conn->close();
-}
+  }
 
-function checkDayData()
-{
-    global $username, $errorMsg, $success;
-    // Create database connection.
-    $config = parse_ini_file('../private/db-config.ini');
-    $conn = new mysqli($config['servername'], $config['username'],
-    $config['password'], $config['dbname']);
-    // Check connection
-    if ($conn->connect_error)
-    {
-        $errorMsg = "Connection failed: " . $conn->connect_error;
-        $success = false;
-    }
-    else
-    {
-        // Prepare the statement:
-        $stmt = $conn->prepare("SELECT captcha_data.username, color_data.username 
-            FROM captcha_data 
-            INNER JOIN color_data
-            ON captcha_data.username = color_data.username
-            WHERE color_data.test_period='day'
-            AND captcha_data.test_period='day'
-            AND color_data.username=?");
-        // Bind & execute the query statement:
-        $stmt->bind_param("s", $username);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        if ($result->num_rows < 1)
-        {
-            $errorMsg = "Day data not found!";
-            $success = false;
-        }
-        $stmt->close();
-    }
-    $conn->close();
+  // Close connection
+  unset($pdo);
 }
-
-function checkNightData()
-{
-    global $username, $errorMsg, $success;
-    // Create database connection.
-    $config = parse_ini_file('../private/db-config.ini');
-    $conn = new mysqli($config['servername'], $config['username'],
-    $config['password'], $config['dbname']);
-    // Check connection
-    if ($conn->connect_error)
-    {
-        $errorMsg = "Connection failed: " . $conn->connect_error;
-        $success = false;
-    }
-    else
-    {
-        // Prepare the statement:
-        $stmt = $conn->prepare("SELECT captcha_data.username, color_data.username 
-            FROM captcha_data 
-            INNER JOIN color_data
-            ON captcha_data.username = color_data.username
-            WHERE color_data.test_period='night'
-            AND captcha_data.test_period='night'
-            AND color_data.username=?");
-        // Bind & execute the query statement:
-        $stmt->bind_param("s", $username);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        if ($result->num_rows < 1)
-        {
-            $errorMsg = "Night data not found!";
-            $success = false;
-        }
-        $stmt->close();
-    }
-    $conn->close();
-}
-
-function checkTrackpadData()
-{
-    global $username, $errorMsg, $success;
-    // Create database connection.
-    $config = parse_ini_file('../private/db-config.ini');
-    $conn = new mysqli($config['servername'], $config['username'],
-    $config['password'], $config['dbname']);
-    // Check connection
-    if ($conn->connect_error)
-    {
-        $errorMsg = "Connection failed: " . $conn->connect_error;
-        $success = false;
-    }
-    else
-    {
-        // Prepare the statement:
-        $stmt = $conn->prepare("SELECT captcha_data.username, color_data.username 
-            FROM captcha_data 
-            INNER JOIN color_data
-            ON captcha_data.username = color_data.username
-            WHERE color_data.device='trackpad'
-            AND captcha_data.device='trackpad'
-            AND color_data.username=?");
-        // Bind & execute the query statement:
-        $stmt->bind_param("s", $username);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        if ($result->num_rows < 2)
-        {
-            $errorMsg = "Trackpad data incomplete!";
-            $success = false;
-        }
-        $stmt->close();
-    }
-    $conn->close();
-}
-
-function checkMouseData()
-{
-    global $username, $errorMsg, $success;
-    // Create database connection.
-    $config = parse_ini_file('../private/db-config.ini');
-    $conn = new mysqli($config['servername'], $config['username'],
-    $config['password'], $config['dbname']);
-    // Check connection
-    if ($conn->connect_error)
-    {
-        $errorMsg = "Connection failed: " . $conn->connect_error;
-        $success = false;
-    }
-    else
-    {
-        // Prepare the statement:
-        $stmt = $conn->prepare("SELECT captcha_data.username, color_data.username 
-            FROM captcha_data 
-            INNER JOIN color_data
-            ON captcha_data.username = color_data.username
-            WHERE color_data.device='mouse'
-            AND captcha_data.device='mouse'
-            AND color_data.username=?");
-        // Bind & execute the query statement:
-        $stmt->bind_param("s", $username);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        if ($result->num_rows < 2)
-        {
-            $errorMsg = "Mouse data incomplete!";
-            $success = false;
-        }
-        $stmt->close();
-    }
-    $conn->close();
-}
-
-authenticateUser();
-checkExistingData();
-checkDayData();
-checkNightData();
-checkTrackpadData();
-checkMouseData();
 ?>
-<html>
-    <head>
-        <?php
-            include "header.php";
-        ?>
-    </head>
-    <body>
-        <main class="container">
-            <div class="bgimg-1 w3-display-container w3-opacity-min">
-  <div class="w3-display-middle" style="white-space:nowrap;">
-     <span class="w3-center w3-padding-large w3-xlarge w3-wide">
-            <hr>
-            <?php
-            if ($success)
-            {
-                echo "<h2>Login successful!</h2>";
-                echo "<h4>Welcome back, " . $name . ".</h4>";
-                echo "<h4>Choose either trackpad or mouse for your next step.</h4>";
-                echo "<a href='trackpad.php' class='btn btn-success'>Trackpad</a>";
-                echo "<br>";
-                echo "<a href='mouse.php' class='btn btn-success'>Mouse</a>";
-                echo "<br>";
-            }
-            else
-            {
-                echo "<h2>Oops!</h2>";
-                echo "<h4>The following errors were detected:</h4>";
-                echo "<p>" . $errorMsg . "</p>";
-                echo "<a href='logout.php' class='btn btn-warning'>Return to Home</a>";
-                echo "<br>";
-            }
-            ?>
-            </span>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <?php
+        include "header.php";
+    ?>
+</head>
+<body>
+
+<section class="h-100 gradient-form" style="background-color: #eee;">
+  <div class="container py-5 h-100">
+    <div class="row d-flex justify-content-center align-items-center h-100">
+      <div class="col-xl-10">
+        <div class="card rounded-3 text-black">
+          <div class="row g-0">
+            <div class="col-lg-6">
+              <div class="card-body p-md-5 mx-md-4">
+
+                <div class="text-center mb-4">
+                  <img src="images/AuthReact_Logo.png"
+                    style="width: 185px;" alt=''>
+                </div>
+
+                <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
+                  <p>Please login to your account</p>
+                  <div class="form-outline">
+                    <input type="text" name="username" class="form-control"
+                      placeholder="Username from your email" />
+                    <label class="form-label" for="username">Username</label>
+                  </div>
+
+                  <?php if (!empty($username_err)) : ?>
+                    <div class="error text-danger mb-4"><?php echo $username_err; ?></div>
+                  <?php endif; ?>
+
+                  <div class="form-outline mt-4">
+                    <input type="password" name="password" class="form-control" />
+                    <label class="form-label" for="password">Password</label>
+                  </div>
+
+                  <?php if (!empty($password_err)) : ?>
+                    <div class="error text-danger mb-4"><?php echo $password_err; ?></div>
+                  <?php endif; ?>
+
+                  <div class="text-center mt-4 pt-1 mb-5 pb-1">
+                    <input class="btn btn-primary btn-block fa-lg gradient-custom-2 mb-3" type="submit" value="Login">
+                    <a class="text-muted" href="forget_password.php">Forgot password?</a>
+                  </div>
+                    
+                </form>
+
+              </div>
             </div>
+            <div class="col-lg-6 d-flex align-items-center gradient-custom-2">
+              <div class="text-white px-3 py-4 p-md-5 mx-md-4">
+                <h4 class="mb-4">We are AuthReact</h4>
+                <p class="small mb-0">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+                  tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud
+                  exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+              </div>
             </div>
-            <hr>
-        </main>
-        <?php
-            include "footer.php";
-        ?>
-    </body>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+    <?php
+        include "footer.php";
+    ?>
+</body>
 </html>

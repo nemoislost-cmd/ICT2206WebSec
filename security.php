@@ -3,6 +3,13 @@ $question = $errorMsg = "";
 $success = true;
 session_start();
 
+// Check if user is logged in
+if (!isset($_SESSION["username"])) {
+    // Redirect to login page
+    header("Location: login.php");
+    exit();
+}
+
 function getSecurityQuestion()
 {
     global $question, $errorMsg, $success;
@@ -52,39 +59,42 @@ getSecurityQuestion();
         ?>
     </head>
     <body>
-        <main class="container">
-            <div class="bgimg-1 w3-display-container w3-opacity-min">
-  <div class="w3-display-middle" style="white-space:nowrap;">
-     <span class="w3-center w3-padding-large w3-xlarge w3-wide">
-            <hr>
+        <?php
+        include "nav.php";
+        ?>
+        <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-md-6">
+        <div class="card shadow-sm">
+          <div class="card-body">
             <?php
             if ($success)
             {
-                echo "<h2>Security Question!</h2>";
-                echo "<h4> " . $question . "</h4>";
-                echo "<h4>Please key in the security answer.</h4>";
-                echo "<br>";
-                echo '<form action="submit.php" method="post">';
-                echo '<div class="form-group">';
-                echo '<label for="email">Answer:</label>';
-                echo '<input class="form-control" type="text" id="ans" required name="ans" placeholder="Enter answer"></div>';
-                echo '<div class="form-group">';
-                echo '<button class="btn btn-primary" type="submit">Submit</button></div></form>';
+                echo "<h2> " . $question . "</h2>";
+                echo "<h4>Please key in the security answer.</h4>";?>
+                <form action="submit.php" method="post">
+              <div class="form-group my-4">
+                <label for="answer">Answer:</label>
+                <input type="text" class="form-control" id="answer" name="answer" required placeholder="Enter answer">
+              </div>
+              <div class="text-center mt-4 pt-1 pb-1">
+                    <input class="btn btn-primary btn-block fa-lg gradient-custom-2 mb-3" type="submit" value="Submit">
+              </div>
+            </form>
+                <?php
             }
             else
             {
                 echo "<h2>Oops!</h2>";
                 echo "<h4>The following errors were detected:</h4>";
-                echo "<p>" . $errorMsg . "</p>";
-                echo "<a href='logout.php' class='btn btn-warning'>Proceed to Logout</a>";
-                echo "<br>";           
+                echo "<p>" . $errorMsg . "</p>";          
             }
             ?>
-            </span>
-            </div>
-            </div>
-            <hr>
-        </main>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
         <?php
             include "footer.php";
         ?>
