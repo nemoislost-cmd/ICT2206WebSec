@@ -1,16 +1,18 @@
+<?php
+session_start();
+?>
+
 <!DOCTYPE html>
 <html>
     <head>
         <meta charset="UTF-8">
         <title>Reaction Time Test</title>
-        <script>
+<!--        <script>
 		alert("Please complete the following tests on this page using your mouse.");
-	</script>
+	</script>-->
         
     </head>
-           <?php
-       session_start();
-       ?>
+
         <style>
 #box {
     width: 800px;
