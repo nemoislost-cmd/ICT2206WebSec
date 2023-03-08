@@ -32,7 +32,7 @@ if (($_SERVER["REQUEST_METHOD"] == "POST")) {
         
         if ($num_test_completed == 5){
             $_SESSION["num_of_tries"] = 0;
-            unset($_SESSION["session_image_answer"]);
+            //unset($_SESSION["session_image_answer"]);
             // Redirect Link to color test
             $_SESSION["session_completed_test"] = 0;
             header("Location: inform_change_test.php");
