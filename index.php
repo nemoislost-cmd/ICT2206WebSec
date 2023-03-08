@@ -78,6 +78,7 @@ unset($pdo); // Close connection
             rel="stylesheet"
             />
 
+<<<<<<< Updated upstream
     </head>
     <body>
         <style>
@@ -87,6 +88,76 @@ unset($pdo); // Close connection
                 text-transform: uppercase;
                 letter-spacing: 2px;
                 line-height: 1.2;
+=======
+h1 {
+  font-size: 48px;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+h2 {
+  font-size: 24px;
+  color: #666;
+  margin-bottom: 10px;
+}
+    </style>
+    <div class="container">
+        <h1>Welcome, <?php echo $_SESSION["username"]; ?>!</h1>
+        <h2> 
+        <?php 
+        var_dump($_SESSION);
+        $servername = "localhost";
+        $username = "admin";
+        $password = "123456";
+        $dbname = "reaction_time";
+    // Create connection
+        $conn = mysqli_connect($servername, $username, $password, $dbname);
+        $daysql = "SELECT * FROM color_data WHERE username='" . $_SESSION["username"] . "' AND test_period='day' ";
+        $nightsql = "SELECT * FROM color_data WHERE username='" . $_SESSION["username"] . "' AND test_period='night' ";
+        $dayresult = mysqli_query($conn, $daysql);
+        $nightresult = mysqli_query($conn, $nightsql);
+        $currentHour = date("H");
+        if (mysqli_num_rows($dayresult) == 0){
+             $_SESSION['day_records'] = 0;
+             echo "DAY RECORDS NOT FOUND. <br>";
+        }else{
+            $_SESSION['day_records'] = 1;
+            echo "DAY RECORDS PRESENT <br>";
+        }
+        
+        if (mysqli_num_rows($nightresult) == 0){
+             $_SESSION['night_records'] = 0;
+              echo "NIGHT RECORDS NOT FOUND <br>";
+             
+        }else{
+            $_SESSION['night_records'] = 1;
+            echo "NIGHT RECORDS PRESENT <br>";
+        }
+        if ($currentHour >= 7 && $currentHour < 19) {
+         echo "Currently in Day Period  <br> ";
+         $_SESSION['time_period'] = "day";
+        } else {
+            
+        echo "Currently Night Period <br> ";
+        $_SESSION['time_period'] = "night";
+        
+         } 
+            if (isset($_SESSION['target_date'])){
+                     $targetDate = $_SESSION['target_date'];
+
+// Format the date and time
+            $formattedDate = date('M j, Y g:i A', strtotime($targetDate));
+
+// Check if the target date is between 7am and 7pm
+            $hour = date('H', strtotime($targetDate));
+            if ($hour >= 7 && $hour < 19) {
+            $message = "Day period will be available after $formattedDate";
+            echo $message;
+            } else {
+            $message = "Night period will be available after $formattedDate";
+            echo $message;
+            }       
+>>>>>>> Stashed changes
             }
 
             h1 {

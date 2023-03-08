@@ -71,9 +71,17 @@ session_start();
     <div class="color"></div>
   </div>
 <img src="images/ice-bear.png" alt="placeholder" width="400px">
+<<<<<<< Updated upstream
 <?php 
 // file for inserting data for captcha data into db
 //include "captcha_insert_data.php";
+=======
+
+<?php
+session_start();
+
+
+>>>>>>> Stashed changes
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
   $data = json_decode($_REQUEST["data"], true);
@@ -202,6 +210,7 @@ function insertColorData($color_data,$color_data_timestamp,$curr_device){
     $margin = calculateMarginOfError($color_data, 0.95);
     $lower_margin = calculateLowerMargin($min, $margin); 
     $upper_margin = calculateUpperMargin($max, $margin); 
+<<<<<<< Updated upstream
 //    echo $min;
 //    echo "<br>";
 //    echo $max;
@@ -210,6 +219,8 @@ function insertColorData($color_data,$color_data_timestamp,$curr_device){
 //     echo "<br>";
 //    echo $upper_margin;
 //     echo "<br>";
+=======
+>>>>>>> Stashed changes
     $sd = calculate_sd($color_data);
     $value1 = $_SESSION["username"];
     $value2 = $color_data[0];
@@ -219,7 +230,7 @@ function insertColorData($color_data,$color_data_timestamp,$curr_device){
     $value6 = $color_data[4];
     $value7 = date('Y-m-d H:i:s',$color_data_timestamp/1000);
     $tempdate = strtotime($value7);
-    $tempdate+= 12 * 60 * 60 ;
+    $tempdate+= 1 * 60 ;
     $targetdate = date('Y-m-d H:i:s', $tempdate);
     $value8 = $_SESSION["time_period"];
     $value9 = $curr_device ;
