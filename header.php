@@ -15,7 +15,7 @@
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.1.0/mdb.min.js"></script>
 
 <!--Custom CSS-->
-<link rel="stylesheet" href="css/new_style.css">
+<link rel="stylesheet" href="css/style.css">
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.2.0/mdb.min.css">
 
