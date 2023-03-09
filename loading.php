@@ -197,7 +197,7 @@ function insertColorData($color_data,$color_data_timestamp,$curr_device){
     $max = calculate_max($color_data);
     $min = calculate_min($color_data);
     $median = calculate_median($color_data);
-    $margin = calculateMarginOfError($color_data, 0.95);
+    $margin = calculateMarginOfError($color_data, 0.80);
     $lower_margin = calculateLowerMargin($min, $margin); 
     $upper_margin = calculateUpperMargin($max, $margin); 
 
@@ -259,7 +259,7 @@ function insertCaptchaData($data,$data_timestamp,$curr_device){
     $max = calculate_max($data);
     $min = calculate_min($data);
     $median = calculate_median($data);
-    $margin = calculateMarginOfError($data, 0.95);
+    $margin = calculateMarginOfError($data, 0.80);
     $lower_margin = calculateLowerMargin($min, $margin); 
     $upper_margin = calculateUpperMargin($max, $margin); 
     $sd = calculate_sd($data);
