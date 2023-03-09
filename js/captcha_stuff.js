@@ -10,7 +10,7 @@ var circle;
 var captchaStartTime;
 var captchaImage = document.getElementById("captcha-image");
 var captchaContainer = document.getElementById("captcha-container");
-
+var captchaEndTime;
 
 // When the page loads, set a flag in localStorage
 window.addEventListener('load', function () {
@@ -69,18 +69,16 @@ captchaImage.addEventListener("click", function (event)
     circle = createCircle(clickedX, clickedY);
     captchaContainer.appendChild(circle);
 
-    console.log("x value -> " + clickedX);
-    console.log("y value -> " + clickedY);
+    // console.log("x value -> " + clickedX);
+    // console.log("y value -> " + clickedY);
     document.getElementById("clickedX").value = clickedX;
     document.getElementById("clickedY").value = clickedY;
+
+    captchaEndTime = new Date().getTime();
 });
 
-//var captchaStartTime = new Date().getTime();
-//console.log(captchaStartTime);
 function complete_captcha() {
-    var captchaEndTime = new Date().getTime();
     var timeTaken = captchaEndTime - captchaStartTime;
-//    console.log("Time taken to complete captcha: " + timeTaken + " milliseconds");
 //    console.log(timeTaken);
     document.getElementById("time_taken").value = timeTaken;
 }
