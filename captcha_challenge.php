@@ -1,6 +1,7 @@
 <?php
 session_start();
 
+// Creating of varies session when session_completed_test is not created
 if (!isset($_SESSION['session_completed_test'])) {
     $_SESSION['session_completed_test'] = 0;
     $_SESSION["device"] = "mouse";
@@ -11,7 +12,6 @@ if (!isset($_SESSION['session_completed_test'])) {
 if (!isset($_SESSION["session_image_answer"])) {
     // Define the coordinates of the hidden object for the puzzle
     $images_with_answers = array(
-    //  "image/question15.jpg" => array("question" => "Find the wolf", "min_x" => 256, "max_x" => 283, "min_y" => 257, "max_y" => 279)
         "images/captcha_images/question1.jpg" => array("question" => "Find the wolf", "min_x" => 500, "max_x" => 600, "min_y" => 136, "max_y" => 195),
         "images/captcha_images/question2.jpg" => array("question" => "Find the bear", "min_x" => 183, "max_x" => 251, "min_y" => 210, "max_y" => 258),
         "images/captcha_images/question3.jpg" => array("question" => "Find the cat", "min_x" => 284, "max_x" => 328, "min_y" => 376, "max_y" => 423),
@@ -35,10 +35,16 @@ if (!isset($_SESSION["session_image_answer"])) {
         "images/captcha_images/question21.jpg" => array("question" => "Find baby boss", "min_x" => 303, "max_x" => 436, "min_y" => 133, "max_y" => 414),
     );
     $_SESSION["session_image_answer"] = $images_with_answers;
-    // Select a random image from the list
+    // Select a random image from the list using array_rand() function
     $random_image = array_rand($images_with_answers);
+
+    // To set $_SESSION["session_image_slected"] to $random_image
+    // $_SESSION["session_image_selected"] is for storing the value of the image that was selected using the array random function 
     $_SESSION["session_image_selected"] = $random_image;
+    
+    // $question value is grabbing from the $images_with_answer array using $random_image to the the value in question
     $question = $images_with_answers[$random_image]["question"];
+
 } else if (isset($_SESSION['success'])) {
     echo "<script>alert('Congratulations! You got the correct answer!');</script>";
     // Unset the session variable
