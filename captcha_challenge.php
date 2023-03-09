@@ -16,16 +16,23 @@ if (!isset($_SESSION["session_image_answer"])) {
         "images/captcha_images/question2.jpg" => array("question" => "Find the bear", "min_x" => 183, "max_x" => 251, "min_y" => 210, "max_y" => 258),
         "images/captcha_images/question3.jpg" => array("question" => "Find the cat", "min_x" => 284, "max_x" => 328, "min_y" => 376, "max_y" => 423),
         "images/captcha_images/question4.jpg" => array("question" => "Find the spotless dog", "min_x" => 477, "max_x" => 514, "min_y" => 61, "max_y" => 179),
-        "images/captcha_images/question5.jpg" => array("question" => "Find the butterfly", "min_x" => 239, "max_x" => 254, "min_y" => 228, "max_y" => 244),
-        "images/captcha_images/question6.jpg" => array("question" => "Find the thief", "min_x" => 363, "max_x" => 421, "min_y" => 54, "max_y" => 194),
-        "images/captcha_images/question7.jpg" => array("question" => "Find the without button eyes", "min_x" => 205, "max_x" => 275, "min_y" => 190, "max_y" => 247),
-        "images/captcha_images/question8.jpg" => array("question" => "Find the frog", "min_x" => 227, "max_x" => 303, "min_y" => 26, "max_y" => 71),
-        "images/captcha_images/question9.jpg" => array("question" => "Find the panda", "min_x" => 244, "max_x" => 307, "min_y" => 91, "max_y" => 154),
-        "images/captcha_images/question10.jpg" => array("question" => "Find the red toy car", "min_x" => 227, "max_x" => 243, "min_y" => 375, "max_y" => 392),
-        "images/captcha_images/question11.jpg" => array("question" => "Find the pineapple", "min_x" => 164, "max_x" => 214, "min_y" => 379, "max_y" => 414),
-        "images/captcha_images/question12.jpg" => array("question" => "Find the cup of coffee", "min_x" => 423, "max_x" => 436, "min_y" => 335, "max_y" => 357),
-        "images/captcha_images/question13.jpg" => array("question" => "Find the crown", "min_x" => 575, "max_x" => 590, "min_y" => 133, "max_y" => 159),
-        "images/captcha_images/question14.jpg" => array("question" => "Find the hat", "min_x" => 256, "max_x" => 283, "min_y" => 257, "max_y" => 279)
+        "images/captcha_images/question5.jpg" => array("question" => "Find the catus", "min_x" => 479, "max_x" => 524, "min_y" => 56, "max_y" => 128),
+        "images/captcha_images/question6.jpg" => array("question" => "Find the ninja", "min_x" => 313, "max_x" => 375, "min_y" => 48, "max_y" => 176),
+        "images/captcha_images/question7.jpg" => array("question" => "Find the red hangbag", "min_x" => 373, "max_x" => 405, "min_y" => 332, "max_y" => 375),
+        "images/captcha_images/question8.jpg" => array("question" => "Find the pink hairdryer", "min_x" => 371, "max_x" => 415, "min_y" => 263, "max_y" => 284),
+        "images/captcha_images/question9.jpg" => array("question" => "Find the yellow pillow", "min_x" => 357, "max_x" => 405, "min_y" => 228, "max_y" => 265),
+        "images/captcha_images/question10.jpg" => array("question" => "Find the red dustbin", "min_x" => 370, "max_x" => 398, "min_y" => 368, "max_y" => 423),
+        "images/captcha_images/question11.jpg" => array("question" => "Find the grape", "min_x" => 167, "max_x" => 233, "min_y" => 239, "max_y" => 265),
+        "images/captcha_images/question12.jpg" => array("question" => "Find the cup of red heels", "min_x" => 178, "max_x" => 245, "min_y" => 54, "max_y" => 89),
+        "images/captcha_images/question13.jpg" => array("question" => "Find the flowers in a vase", "min_x" => 329, "max_x" => 363, "min_y" => 140, "max_y" => 194),
+        "images/captcha_images/question14.jpg" => array("question" => "Find the toilet paper", "min_x" => 569, "max_x" => 597, "min_y" => 326, "max_y" => 367),
+        "images/captcha_images/question15.jpg" => array("question" => "Find the red hair brush", "min_x" => 213, "max_x" => 230, "min_y" => 275, "max_y" => 306),
+        "images/captcha_images/question16.jpg" => array("question" => "Find the box with a chicken head", "min_x" => 314, "max_x" => 381, "min_y" => 211, "max_y" => 308),
+        "images/captcha_images/question17.jpg" => array("question" => "Find the basketball", "min_x" => 483, "max_x" => 530, "min_y" => 37, "max_y" => 81),
+        "images/captcha_images/question18.jpg" => array("question" => "Find the teddy bear", "min_x" => 481, "max_x" => 526, "min_y" => 244, "max_y" => 275),
+        "images/captcha_images/question19.jpg" => array("question" => "Find tweety bird", "min_x" => 336, "max_x" => 403, "min_y" => 361, "max_y" => 456),
+        "images/captcha_images/question20.jpg" => array("question" => "Find sitch", "min_x" => 296, "max_x" => 478, "min_y" => 212, "max_y" => 436),
+        "images/captcha_images/question21.jpg" => array("question" => "Find baby boss", "min_x" => 303, "max_x" => 436, "min_y" => 133, "max_y" => 414),
     );
     $_SESSION["session_image_answer"] = $images_with_answers;
     // Select a random image from the list
@@ -74,18 +81,13 @@ else if (isset($_SESSION['failure'])) {
 ?>
 
 <!DOCTYPE html>
-<!--
-Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
-Click nbfs://nbhost/SystemFileSystem/Templates/Project/PHP/PHPProject.php to edit this template
--->
 
 <html>
     <head>
         <meta charset="UTF-8">
         <link href="css/captcha_style.css" rel="stylesheet" type="text/css"/>
         <script defer src="js/captcha_stuff.js"></script>
-
-        <title></title>
+        <title>Image Reaction Test</title>
     </head>
     <body>
         <h1> 
@@ -107,8 +109,6 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Project/PHP/PHPProject.php to edi
                     <input type="hidden" name="clickedX" id="clickedX" value="">
                     <input type="hidden" name="clickedY" id="clickedY" value="">
                     <input type="hidden" name="time_taken" id="time_taken" value="">
-                    <!--                    <div id="click_area"><div class="circle"></div></div>
-                    <div class="circle"></div>-->
                 </div>
                 <button id="btn_submit"  type="submit" onclick="complete_captcha()">Submit</button>
             </form>
