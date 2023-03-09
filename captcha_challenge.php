@@ -87,7 +87,6 @@ else if (isset($_SESSION['failure'])) {
 ?>
 
 <!DOCTYPE html>
-
 <html>
     <head>
         <meta charset="UTF-8">
