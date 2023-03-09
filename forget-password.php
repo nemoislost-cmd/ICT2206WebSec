@@ -1,27 +1,22 @@
 <?php
 // Initialize the session
-session_start();
+// session_start();
  
-// Include the database configuration file
+// Include the necessary files
 require_once 'db.php';
-
-// Define variable to hold error message
-$error_msg = '';
+require_once 'security-validate-sanitise.php';
 
 // If form submitted, process it
 if($_SERVER["REQUEST_METHOD"] == "POST"){
 
-    // Validate name
-    if (empty(trim($_POST["username"]))) {
-        $error_msg = "Please enter your username.";
-    } else {
-        $username = trim($_POST["username"]);
-    }
+    // Validate username
+    $username = validate_username($_POST["username"]);
 
-    if (empty($error_msg)){
+    // If no issues, proceed with database queries
+    if (!isset($message["Error"])){
         
         // Check if the username exists in the database
-        $sql = "SELECT email FROM user_accountS WHERE username = :username";
+        $sql = "SELECT email FROM user_accounts WHERE username = :username";
 
         if($stmt = $pdo->prepare($sql)){
 
@@ -76,31 +71,39 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                             $mail->Body = 'Hello,<br><br>Your temporary password is: ' . $temp_password . '<br><br>Please login with this password from now on.<br><br>Thank you.';
                             
                             if($mail->send()){
+
+                                // Start output buffering
+                                ob_start();
                                 // Redirect to the login page
+                                session_start();
+                                $_SESSION["Info"]["General"] = "Do check your email for the temporary password to login.";
                                 header("location: login.php");
+                                // Flush the output buffer and send the header
+                                ob_end_flush();
                                 exit();
+
                             } else {
-                                $error_msg = "Error: " . $mail->ErrorInfo;
+                              $message["Error"]["General"] = "Mailing Error: " . $mail->ErrorInfo;
                             }
 
                         } else {
-                            $error_msg = "Something went wrong. Please try again later.";
+                          $message["Error"]["General"] = "Oops! Something went wrong. Please try again later.";
                         }
                         // Close statement
                         unset($stmt2);
                     }
                 } else {
-                    $error_msg = "This username does not exist.";
+                  $message["Error"]["Username"] = "This username does not exist.";
                 }
             } else {
-                $error_msg = "Something went wrong. Please try again later.";
+              $message["Error"]["General"] = "Something went wrong. Please try again later.";
             }
             // Close statement
             unset($stmt);
-        }
-        // Close connection
-        unset($pdo);
+        }    
     }
+    // Close connection
+    unset($pdo);
 }
 ?>
 
@@ -132,6 +135,26 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
 <body>
 
 <section class="h-100 gradient-form" style="background-color: #eee;">
+
+  <!-- To see how it looks, change it to !isset -->
+  <?php if (isset($message["Error"]["General"])) : ?> 
+    <!-- Frame Modal Top -->
+    <div class="modal fade top show" id="MessageModal" tabindex="-1" role="dialog" aria-labelledby="MessageModal" aria-hidden="true">
+      <div class="modal-dialog modal-frame modal-top " role="document" style="max-width: 100%; margin:0;">
+        <div class="modal-content">
+          <div class="modal-body" style="padding:0;">
+            <div class="d-flex justify-content-center align-items-center">
+              <!-- To see how it looks, change the content of the message -->
+              <!-- <p class="pt-3 mx-4" id="GeneralMessage">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Impedit nisi quo provident fugiat reprehenderit nostrum quos..</p> -->
+              <p class="pt-3 mx-4" id="GeneralMessage"><?php echo $message["Error"]["General"]; ?></p>
+              <button type="button" class="btn btn-secondary" data-mdb-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  <?php endif; ?>
+
   <div class="container py-5 h-100">
     <div class="row d-flex justify-content-center align-items-center h-100">
       <div class="col-xl-10">
@@ -154,8 +177,8 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                         <label class="form-label" for="username">Username</label>
                     </div>
 
-                    <?php if (!empty($error_msg)) : ?>
-                        <div class="error text-danger mb-4"><?php echo $error_msg; ?></div>
+                    <?php if (isset($message["Error"]["Username"])) : ?>
+                        <div class="error text-danger mb-4"><?php echo $message["Error"]["Username"]; ?></div>
                     <?php endif; ?>
 
                     <div class="text-center mt-4 pt-1 mb-4 pb-1">
@@ -185,10 +208,16 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
 </section>
 
 <!-- MDB -->
-<script
-  type="text/javascript"
-  src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.1.0/mdb.min.js"
-></script>
+<!-- Required JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.10.2/umd/popper.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.1.0/mdb.min.js"></script>
+
+<script>
+  $(document).ready(function(){
+    $('#MessageModal').modal('show');
+  });
+</script>
 
 </body>
 </html>

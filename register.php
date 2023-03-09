@@ -1,26 +1,28 @@
 <?php
-// Include the database configuration file
+// Include the necessary files
 require_once 'db.php';
+require_once 'security-validate-sanitise.php';
 
 // Define variables and initialize with empty values
-$name = $email = $password = "";
-$name_err = $email_err = $password_err = $confirm_password_err = "";
+$name = $email = $password = $confirm_password = "";
 
 // Processing form data when form is submitted
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
   // Validate name
-  if (empty(trim($_POST["name"]))) {
-    $name_err = "Please enter your name.";
-  } else {
-    $name = trim($_POST["name"]);
-  }
+  $name = validate_name($_POST["name"]);
 
   // Validate email
-  if (empty(trim($_POST["email"]))) {
-    $email_err = "Please enter your email address.";
-  } else {
-    $email = trim($_POST["email"]);
+  $email = validate_email($_POST["email"]);
+
+  // Validate password
+  $password = validate_password($_POST["password"]);
+
+  // Validate confirm password
+  $confirm_password = validate_password($_POST["confirm_password"], "ConfirmPassword");
+
+  // Check for duplicate email
+  if (!isset($message["Error"]["Email"])){
 
     // Prepare a select statement to check if the email already exists
     $sql = "SELECT username FROM user_accounts WHERE email = :email";
@@ -31,13 +33,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
       // Attempt to execute the prepared statement
       if ($stmt->execute()) {
+
         // Check if email already exists
         if ($stmt->rowCount() == 1) {
-          $email_err = "This email address is already taken.";
+          $message["Error"]["Email"] = "This email address is already taken.";
         } 
 
       } else {
-        echo "Oops! Something went wrong. Please try again later.";
+        $message["Error"]["General"] = "Oops! Something went wrong. Please try again later.";
       }
 
       // Close statement
@@ -45,31 +48,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
   }
 
-  // Validate password
-  if (empty(trim($_POST["password"]))) {
-    $password_err = "Please enter a password.";
-  } elseif (strlen(trim($_POST["password"])) < 8) {
-    $password_err = "Password must have at least 8 characters.";
-  } elseif (!preg_match('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/', trim($_POST["password"]))) {
-    // Password does not meet complexity requirements
-    $password_err = "Password must have at least a uppercase letter, a lowercase letter and a number. No special characters is allowed";
-  } else {
-    $password = trim($_POST["password"]);
+  /*
+  if (!isset($message["Error"]["Password"]) && !isset($message["Error"]["ConfirmPassword"])){
+      if ($password !== $confirm_password){
+        $message["Error"]["ConfirmPassword"] = "Passwords do not match.";
+      }
+  }*/
+
+  // Check for password matches
+  if ($password !== $confirm_password){
+    $message["Error"]["ConfirmPassword"] = "Passwords do not match.";
   }
 
-  // Validate confirm password
-  if (!preg_match('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/', trim($_POST["confirm_password"]))) {
-    // Password does not meet complexity requirements
-    $confirm_password_err = "Password doesn't match";
-  } elseif (trim($_POST["password"]) !== trim($_POST["confirm_password"]) ) {
-    // Password does not meet complexity requirements
-    $confirm_password_err = "Password doesn't match";
-  }
-
-
-  // Check input errors before inserting in database
-  if (empty($name_err) && empty($email_err) && empty($password_err) && empty($$confirm_password_err)) {
-
+  // If no issues, proceed with making changes to database
+  if (!isset($message["Error"])){
     // Generate a unique username
     $username = substr($name, 0, 4) ."_". uniqid();
 
@@ -110,25 +102,34 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $mail->Body = 'Hello '.$name.',<br><br>Please use the following username to login into the system: ' . $username . '<br><br>Thank you.';
         
         if($mail->send()){
-            // Redirect to the login page
-            header("location: login.php");
-            exit();
+
+          // Start output buffering
+          ob_start();
+          // Redirect to the login page
+          session_start();
+          $_SESSION["Info"]["General"] = "Registration successful. Do check your email for the username to login.";
+          header("location: login.php");
+          // Flush the output buffer and send the header
+          ob_end_flush();
+          exit();
+
         } else {
-            $email_err = "Error: " . $mail->ErrorInfo;
+          $message["Error"]["General"] = "Mailing Error: " . $mail->ErrorInfo;
         }
 
       } else {
-        echo "Oops! Something went wrong. Please try again later.";
+        $message["Error"]["General"] = "Oops! Something went wrong. Please try again later.";
       }
 
       // Close statement
       unset($stmt);
     }
   }
+  
+  // Close connection
+  unset($pdo);
 
-    // Close connection
-    unset($pdo);
-}
+} // End of if ($_SERVER["REQUEST_METHOD"] == "POST")
 ?>
 
 <!DOCTYPE html>
@@ -158,8 +159,27 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 </head>
 <body>
 
-
 <section class="h-100 gradient-form" style="background-color: #eee;">
+  
+  <!-- To see how it looks, change it to !isset -->
+  <?php if (isset($message["Error"]["General"])) : ?> 
+    <!-- Frame Modal Top -->
+    <div class="modal fade top show" id="MessageModal" tabindex="-1" role="dialog" aria-labelledby="MessageModal" aria-hidden="true">
+      <div class="modal-dialog modal-frame modal-top " role="document" style="max-width: 100%; margin:0;">
+        <div class="modal-content">
+          <div class="modal-body" style="padding:0;">
+            <div class="d-flex justify-content-center align-items-center">
+              <!-- To see how it looks, change the content of the message -->
+              <!-- <p class="pt-3 mx-4" id="GeneralMessage">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Impedit nisi quo provident fugiat reprehenderit nostrum quos..</p> -->
+              <p class="pt-3 mx-4" id="GeneralMessage"><?php echo $message["Error"]["General"]; ?></p>
+              <button type="button" class="btn btn-secondary" data-mdb-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  <?php endif; ?>
+
   <div class="container py-5 h-100">
     <div class="row d-flex justify-content-center align-items-center h-100">
       <div class="col-xl-10">
@@ -194,8 +214,8 @@ No special characters allowed.</p>
                     <label class="form-label" for="name">Name</label>
                   </div>
 
-                  <?php if (!empty($name_err)) : ?>
-                    <div class="error text-danger mb-4"><?php echo $name_err; ?></div>
+                  <?php if (isset($message["Error"]["Name"])) : ?>
+                    <div class="error text-danger mb-4"><?php echo $message["Error"]["Name"]; ?></div>
                   <?php endif; ?>
                   
                   <div class="form-outline mt-4">
@@ -203,8 +223,8 @@ No special characters allowed.</p>
                     <label class="form-label" for="email">Email</label>
                   </div>
 
-                  <?php if (!empty($email_err)) : ?>
-                    <div class="error text-danger mb-4"><?php echo $email_err; ?></div>
+                  <?php if (isset($message["Error"]["Email"])) : ?>
+                    <div class="error text-danger mb-4"><?php echo $message["Error"]["Email"]; ?></div>
                   <?php endif; ?>
 
                   <div class="form-outline mt-4">
@@ -212,8 +232,8 @@ No special characters allowed.</p>
                     <label class="form-label" for="password">Password</label>
                   </div>
 
-                  <?php if (!empty($password_err)) : ?>
-                    <div class="error text-danger mb-4"><?php echo $password_err; ?></div>
+                  <?php if (isset($message["Error"]["Password"])) : ?>
+                    <div class="error text-danger mb-4"><?php echo $message["Error"]["Password"]; ?></div>
                   <?php endif; ?>
 
                   <div class="form-outline mt-4">
@@ -221,8 +241,8 @@ No special characters allowed.</p>
                     <label class="form-label" for="confirm_password">Confirm Password</label>
                   </div>
 
-                  <?php if (!empty($confirm_password_err)) : ?>
-                    <div class="error text-danger mb-4"><?php echo $confirm_password_err; ?></div>
+                  <?php if (isset($message["Error"]["ConfirmPassword"])) : ?>
+                    <div class="error text-danger mb-4"><?php echo $message["Error"]["ConfirmPassword"]; ?></div>
                   <?php endif; ?>
 
                   <div class="text-center mt-4 pt-1 mb-4 pb-1">
@@ -247,10 +267,16 @@ No special characters allowed.</p>
 </section>
 
 <!-- MDB -->
-<script
-  type="text/javascript"
-  src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.1.0/mdb.min.js"
-></script>
+<!-- Required JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.10.2/umd/popper.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.1.0/mdb.min.js"></script>
+
+<script>
+  $(document).ready(function(){
+    $('#MessageModal').modal('show');
+  });
+</script>
 
 </body>
 </html>

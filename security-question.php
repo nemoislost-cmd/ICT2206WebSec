@@ -1,53 +1,66 @@
 <?php
 session_start();
 
-// Include the database configuration file
+// Include the necessary files
 require_once 'db.php';
+require_once 'security-validate-sanitise.php';
 
-$selected_question = $user_answer = "";
+// Define variable and initialize with empty value
+$username = $selected_question = $user_answer = "";
 
+// Validate username
+$username = validate_username($_SESSION["username"]);
 
 // Check if user is logged in
-if (!isset($_SESSION["username"])) {
+if (!isset($username)) {
     // Redirect to login page
     header("Location: login.php");
     exit();
 }
 
-// Get user's security question and answer from database
-$username = $_SESSION["username"];
+// Check if user exist and get their security questions and answers
+if (!isset($message["Error"]["Username"])){
 
-// Prepare a select statement
-$sql = "SELECT question, answer FROM user_accounts WHERE username = :username";
-$stmt = $pdo->prepare($sql);
+    // Prepare an insert statement
+    $sql = "SELECT question, answer FROM user_accounts WHERE username = :username";
+    
+    if ($stmt = $pdo->prepare($sql)) {
+        // Bind the values to the prepared statement
+        $stmt->bindValue(":username", $username, PDO::PARAM_STR);
 
-// Bind the value of username to the prepared statement 
-$stmt->bindValue(":username", $username, PDO::PARAM_STR);
+        // Attempt to execute the prepared statement
+        if ($stmt->execute()) {
 
-// Execute and Fetch the result
-$stmt->execute();
-$row = $stmt->fetch(PDO::FETCH_ASSOC);
-$security_question = $row['question'];
-$security_answer = $row['answer'];
+            // Check if username exists
+            if ($stmt->rowCount() == 1) {
+                //Fetch the row
+                $row = $stmt->fetch(PDO::FETCH_ASSOC);
+                $security_question = $row["question"];
+                $security_answer = $row["answer"];
 
-// Close statement
-unset($stmt);
+                // Check if user has already set a security question and answer
+                if ($security_question && $security_answer) {
+                  // Redirect to index page
+                  header("Location: index.php");
+                  exit();
+                }
 
-// Check if user has already set a security question and answer
-if ($security_question && $security_answer) {
-    // Redirect to index page
-    header("Location: index.php");
-    exit();
-}
+            } else {
+                // Display an error message if username doesn't exist
+                // $_SESSION["Error"]["General"]  = "No account found with that username.";
+                
+                // Redirect to home page
+                header("location: login.php");
+                exit();
+            }
 
+          }
 
-// Function to check for XSS and SQL injection attacks
-function test_input($data) {
-    $data = trim($data);
-    $data = stripslashes($data);
-    $data = htmlspecialchars($data);
-    return $data;
-}
+          // Close statement
+          unset($stmt);
+      }
+  }
+
 
 // Retrieve questions from API if not already stored in session variable
 if (!isset($_SESSION["List of Questions"])) {
@@ -61,63 +74,67 @@ if (!isset($_SESSION["List of Questions"])) {
   // Shuffle the questions
   shuffle($questions);
 
-    // Add 3 question into the list stored inside the session
-    $_SESSION["List of Questions"] = $selected_questions = array_slice($questions, 0, 3);
+  // Add 3 question into the list stored inside the session
+  $_SESSION["List of Questions"] = $selected_questions = array_slice(array_map("validate_question_answer",$questions), 0, 3);
 }
 
 // Check if form is submitted
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Get selected question and user's answer
-    $selected_question =$_POST["question"];
-    $user_answer = test_input($_POST["answer"]);
+    $selected_question = validate_question_answer($_POST["question"]);
+    $user_answer = validate_question_answer($_POST["answer"], "Answer");
 	
 	/*
 	print_r(test_input($selected_question));
 	print_r(array_map('test_input',$_SESSION["List of Questions"]));
 	print_r($_SESSION["List of Questions"]);
 	echo (!in_array($selected_question, array_map('test_input',$_SESSION["List of Questions"])));
-    */
+  */
 
-	// Check if selected question matches one of the three listed questions
-    if (!in_array( test_input($selected_question) ,$_SESSION["List of Questions"])) {
-        //$error_message = "Questions are already fixed, do not change it.";
-    } elseif (empty($user_answer)){
-		$error_message = "Please enter an answer";
-	}else {
-        // Prepare an update statement
-		$sql = "UPDATE user_accounts SET question = :question, answer = :answer WHERE username = :username";
+  // If no issues, proceed with checking if question has been modified
+  if (!isset($message["Error"])){
+    
+    if (!in_array($selected_question, $_SESSION["List of Questions"])) {
+      $message["Error"]["Question"] = "Questions are already fixed, do not change it.";
 
-		if ($stmt = $pdo->prepare($sql)) {
-  			// Bind parameters to the prepared statement
-  			$stmt->bindValue(":username", $username, PDO::PARAM_STR);
-  			$stmt->bindValue(":question", $selected_question, PDO::PARAM_STR);
-  			$stmt->bindValue(":answer", $user_answer, PDO::PARAM_STR);
+    }else {
+      // Prepare an update statement
+      $sql = "UPDATE user_accounts SET question = :question, answer = :answer WHERE username = :username";
 
-			// Attempt to execute the prepared statement
-			if ($stmt->execute()) {
-				// Update successful
-				echo "User's security question and answer updated successfully.";
+      if ($stmt = $pdo->prepare($sql)) {
+          // Bind parameters to the prepared statement
+          $stmt->bindValue(":username", $username, PDO::PARAM_STR);
+          $stmt->bindValue(":question", $selected_question, PDO::PARAM_STR);
+          $stmt->bindValue(":answer", $user_answer, PDO::PARAM_STR);
 
-				// Redirect to index.php
-				header("Location: index.php");
-				exit();
-				
-			} else {
-				// Update failed
-				$error_message = "Error: Failed to update user's security question and answer.";
-			}
-		}
+        // Attempt to execute the prepared statement
+        if ($stmt->execute()) {
+          // Update successful
+          echo "User's security question and answer updated successfully.";
+
+          // Redirect to index.php
+          header("Location: index.php");
+          exit();
+          
+        } else {
+          // Update failed
+          $message["Error"]["General"] = "Error: Failed to update user's security question and answer.";
+        }
+        // Close statement
+        unset($stmt);
+      }
     }
-}
+    // Close connection
+    unset($pdo);
+  }
+}    
 
-if (isset($error_message)){
+if (isset($message["Error"])){
 	// Set the question back instead of retrieve a new one
 	$selected_questions = $_SESSION["List of Questions"];
 }
+$selected_questions = $_SESSION["List of Questions"];
 
-
-  // Close connection
-  unset($pdo);
 ?>
 
 <!DOCTYPE html>
@@ -144,9 +161,6 @@ if (isset($error_message)){
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
           <li class="nav-item">
-            <a class="nav-link" href="#">Home</a>
-          </li>
-          <li class="nav-item">
 		  <a class="nav-link" href="logout.php">Logout</a>
           </li>
         </ul>
@@ -162,9 +176,11 @@ if (isset($error_message)){
             <h4 class="mb-0">Set Security Question</h4>
           </div>
           <div class="card-body">
-            <?php if (isset($error_message)) { ?>
+            <?php if (isset($message["Error"])) { ?>
               <div class="alert alert-danger" role="alert">
-                <?php echo $error_message; ?>
+                <?php if (isset($message["Error"]["General"])){echo $message["Error"]["General"];} ?>
+                <?php if (isset($message["Error"]["Question"])){echo $message["Error"]["Question"];} ?>
+                <?php if (isset($message["Error"]["Answer"])){echo $message["Error"]["Answer"];} ?>
               </div>
             <?php } ?>
             <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">

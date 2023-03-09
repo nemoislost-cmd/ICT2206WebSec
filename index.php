@@ -1,45 +1,68 @@
 <?php
 session_start();
 
-// Include the database configuration file
+// Include the necessary files
 require_once 'db.php';
+require_once 'security-validate-sanitise.php';
+
+// Define variable and initialize with empty value
+$username = "";
+
+// Validate username
+$username = validate_username($_SESSION["username"]);
 
 // Check if user is logged in
-if (!isset($_SESSION["username"])) {
+if (!isset($username)) {
     // Redirect to login page
     header("Location: login.php");
     exit();
 }
 
-// Get user's security question and answer from database
-$username = $_SESSION["username"];
-$sql = "SELECT question, answer FROM user_accounts WHERE username = :username";
-$stmt = $pdo->prepare($sql);
-$stmt->bindValue(":username", $username, PDO::PARAM_STR);
+// Check if user exist and get their security questions and answers
+if (!isset($message["Error"]["Username"])){
 
-$stmt->execute();
+    // Prepare an insert statement
+    $sql = "SELECT question, answer FROM user_accounts WHERE username = :username";
+    
+    if ($stmt = $pdo->prepare($sql)) {
+        // Bind the values to the prepared statement
+        $stmt->bindValue(":username", $username, PDO::PARAM_STR);
 
-// Check if username exists
-if ($stmt->rowCount() == 1) {
-    //Fetch the row
-    $row = $stmt->fetch(PDO::FETCH_ASSOC);
-    $security_question = $row["question"];
-    $security_answer = $row["answer"];
+        // Attempt to execute the prepared statement
+        if ($stmt->execute()) {
 
-    // Check if user has already set a security question and answer
-    if (!$security_question || !$security_answer) {
-        // Redirect to security question page
-        header("Location: security-question.php");
-        exit();
+            // Check if username exists
+            if ($stmt->rowCount() == 1) {
+                //Fetch the row
+                $row = $stmt->fetch(PDO::FETCH_ASSOC);
+                $security_question = $row["question"];
+                $security_answer = $row["answer"];
+
+                // Check if user haven't set their security question and answer
+                if (empty($security_question) || empty($security_answer)) {
+                    // Redirect to security question page
+                    header("Location: security-question.php");
+                    exit();
+                }
+                
+            } else {
+                // Display an error message if username doesn't exist
+                // $_SESSION["Error"]["General"]  = "No account found with that username.";
+                
+                // Redirect to home page
+                header("location: login.php");
+                exit();
+            }
+
+        }
+
+        // Close statement
+        unset($stmt);
     }
-} else {
-    // Display an error message if username doesn't exist
-    $username_err = "No account found with that username.";
-
-    // Redirect to home page
-    header("location: login.php");
-    exit();
 }
+
+// Close connection
+unset($pdo);
 
 // If logout button is clicked
 if (isset($_POST["logout"])) {
@@ -49,8 +72,6 @@ if (isset($_POST["logout"])) {
     exit();
 }
 
-unset($stmt); // Close statement
-unset($pdo); // Close connection
 ?>
 
 <!DOCTYPE html>

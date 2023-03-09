@@ -1,13 +1,13 @@
 <?php
 // Start session
-//session_start();
+session_start();
 
-// Include the database configuration file
+// Include the necessary files
 require_once 'db.php';
+require_once 'security-validate-sanitise.php';
 
 // Define variables and initialize with empty values
 $username = $password = "";
-$username_err = $password_err = "";
 
 // Checks if the HTTP request method is GET, which is the method used by browsers to request a new page or refresh the current page
 if ($_SERVER["REQUEST_METHOD"] == "GET") {
@@ -18,22 +18,13 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
   // Validate username
-  if (empty(trim($_POST["username"]))) {
-    $username_err = "Please enter your username.";
-  } else {
-    $username = trim($_POST["username"]);
-  }
+  $username = validate_username($_POST["username"]);
 
   // Validate password
-  if (empty(trim($_POST["password"]))) {
-    $password_err = "Please enter your password.";
-  } else {
-    $password = trim($_POST["password"]);
-  }
+  $password = validate_password($_POST["password"], "Password", "Login");
 
-  // Check input errors before attempting to login
-  if (empty($username_err) && empty($password_err)) {
-
+  // If no issues, proceed with trying to login
+  if (!isset($message["Error"])){ 
     // Prepare a select statement
     $sql = "SELECT username, password FROM user_accounts WHERE username = :username";
 
@@ -52,37 +43,46 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
           // Verify password
           if (password_verify($password, $password_hash)) {
+            
+            // Start output buffering
+            ob_start();
             // Password is correct, start a new session
             session_start();
 
             // Store data in session variables
-            $_SESSION["loggedin"] = true;
             $_SESSION["username"] = $username;
 
             // Redirect to home page
             header("location: index.php");
+            // Flush the output buffer and send the header
+            ob_end_flush();
             exit();
 
           } else {
             // Display an error message if password is not valid
-            $password_err = "The password you entered was not valid.";
+            $message["Error"]["Password"] = "The password you entered was not valid.";
           }
         } else {
           // Display an error message if username doesn't exist
-          $username_err = "No account found with that username.";
+          $message["Error"]["Username"]  = "No account found with that username.";
         }
       } else {
-        echo "Oops! Something went wrong. Please try again later.";
+        $message["Error"]["General"] = "Oops! Something went wrong. Please try again later.";
       }
 
       // Close statement
       unset($stmt);
     }
+  }else{
+    // Display an error message if password is not valid
+    $message["Error"]["Password"] = "The password you entered was not valid.";
   }
 
   // Close connection
   unset($pdo);
-}
+
+} // End of if ($_SERVER["REQUEST_METHOD"] == "POST")
+
 ?>
 
 <!DOCTYPE html>
@@ -113,6 +113,31 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 </head>
 <body>
 
+  <!-- To see how it looks, change it to !isset -->
+  <?php if (isset($message["Error"]["General"]) || isset($_SESSION["Info"]["General"])) : ?> 
+    <!-- Frame Modal Top -->
+    <div class="modal fade top" id="MessageModal" tabindex="-1" role="dialog" aria-labelledby="MessageModal" aria-hidden="true">
+      <div class="modal-dialog modal-frame modal-top " role="document" style="max-width: 100%; margin:0;">
+        <div class="modal-content">
+          <div class="modal-body" style="padding:0;">
+            <div class="d-flex justify-content-center align-items-center">
+
+            <?php if (isset($message["Error"]["General"])) :?>
+              <!-- To see how it looks, change the content of the message -->
+              <!-- <p class="pt-3 mx-4" id="GeneralMessage">Error</p> -->
+              <p class="pt-3 mx-4" id="GeneralMessage"><?php echo $message["Error"]["General"]; ?></p>
+            <?php elseif (isset($_SESSION["Info"]["General"])) :?>
+              <!-- <p class="pt-3 mx-4" id="GeneralMessage">Info</p> -->
+              <p class="pt-3 mx-4" id="GeneralMessage"><?php echo $_SESSION["Info"]["General"]; unset($_SESSION["Info"]["General"]); ?></p>
+            <?php endif; ?>
+              <button type="button" class="btn btn-secondary" data-mdb-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  <?php endif; ?>
+
 <section class="h-100 gradient-form" style="background-color: #eee;">
   <div class="container py-5 h-100">
     <div class="row d-flex justify-content-center align-items-center h-100">
@@ -136,8 +161,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <label class="form-label" for="username">Username</label>
                   </div>
 
-                  <?php if (!empty($username_err)) : ?>
-                    <div class="error text-danger mb-4"><?php echo $username_err; ?></div>
+                  <?php if (isset($message["Error"]["Username"])) : ?>
+                    <div class="error text-danger mb-4"><?php echo $message["Error"]["Username"]; ?></div>
                   <?php endif; ?>
 
                   <div class="form-outline mt-4">
@@ -145,8 +170,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <label class="form-label" for="password">Password</label>
                   </div>
 
-                  <?php if (!empty($password_err)) : ?>
-                    <div class="error text-danger mb-4"><?php echo $password_err; ?></div>
+                  <?php if (isset($message["Error"]["Password"])) : ?>
+                    <div class="error text-danger mb-4"><?php echo $message["Error"]["Password"]; ?></div>
                   <?php endif; ?>
 
                   <div class="text-center mt-4 pt-1 mb-5 pb-1">
@@ -177,11 +202,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 </section>
 
 <!-- MDB -->
-<script
-  type="text/javascript"
-  src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.1.0/mdb.min.js"
-></script>
+<!-- Required JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.10.2/umd/popper.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.1.0/mdb.min.js"></script>
 
+<script>
+  $(document).ready(function(){
+    $('#MessageModal').modal('show');
+  });
+</script>
 
 </body>
 </html>
