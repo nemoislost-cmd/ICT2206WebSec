@@ -173,10 +173,8 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
             </div>
             <div class="col-lg-6 d-flex align-items-center gradient-custom-2">
               <div class="text-white px-3 py-4 p-md-5 mx-md-4">
-                <h4 class="mb-4">We are AuthReact</h4>
-                <p class="small mb-0">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-                  tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud
-                  exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+                <h4 class="mb-4">Important Notes : Forget Password</h4>
+                <p class="small mb-0" style="text-align: justify;">In the event that you forgot your password, the system will generate a random password and send it to the email that you have registered with in Auth-React.</p>
               </div>
             </div>
           </div>

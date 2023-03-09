@@ -36,7 +36,7 @@ if (isset($_SESSION['reminderMail'])) {
         
         $mail->isHTML(true);
         $mail->Subject = 'Auth-React Reminder : Come back to input remaining data!';
-        $mail->Body = 'Hello '.$name.',<br><br>12hrs have passed since you last calibrated your data. Please come back to finish the remaining tests for day or night respectively.<br><br>Thank you.';
+        $mail->Body = 'Hello '.$name.',<br><br>12hrs have passed since you last did the tests for Day/Night. Please come back to finish the remaining tests for Day/Night respectively.<br><br>Thank you. Visit the site at http://nice-kirch.cloud';
         
         if($mail->send()){
             $_SESSION['reminderMail']=1;

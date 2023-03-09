@@ -165,10 +165,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </div>
             <div class="col-lg-6 d-flex align-items-center gradient-custom-2">
               <div class="text-white px-3 py-4 p-md-5 mx-md-4">
-                <h4 class="mb-4">We are AuthReact</h4>
-                <p class="small mb-0">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-                  tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud
-                  exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+                <h4 class="mb-4">What is AuthReact?</h4>
+                <p class="small mb-0" style="text-align: justify;">Auth-React is an application developed by the team trying_not_to_die for the purpose of ICT 2206 Web Security. This application aims to be a POC for an experimental concept conceived by the team. Our team is trying to investigate the hypothesis of using human reaction time as a newer form of 2FA authentication to authenticate users into the system. We have developed a series of tests for the purpose of this experiment that will utilise human reaction time. We are also taking into account several factors that we are trying to investigate that will affect the human reaction time in general. </p>
               </div>
             </div>
           </div>
