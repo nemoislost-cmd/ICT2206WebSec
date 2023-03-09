@@ -2,7 +2,6 @@
 session_start();
     
     if (($_SESSION["device"] == "mouse") && (!isset($_SESSION["curr_device"]))){
-//        $_SESSION["device"] = "trackpad";
         $link = "reactiontime.php";
         $device = $_SESSION["device"];
         $current_test = "Captcha";
@@ -27,8 +26,7 @@ session_start();
         <meta charset="UTF-8">
         <link href="css/captcha_style.css" rel="stylesheet" type="text/css"/>
         <script defer src="js/captcha_stuff.js"></script>
-
-        <title></title>
+        <title>Completion of test</title>
     </head>
     <body>
         <form id="content-container" action="<?php echo $link;?>">

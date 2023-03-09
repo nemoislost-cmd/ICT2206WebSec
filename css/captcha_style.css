@@ -1,12 +1,3 @@
-/*
-Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
-Click nbfs://nbhost/SystemFileSystem/Templates/Other/CascadeStyleSheet.css to edit this template
-*/
-/* 
-    Created on : 3 Mar 2023, 10:00:12 am
-    Author     : mel
-*/
-
 #main-container{
     position: relative;
     right: 0;
@@ -16,7 +7,6 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/CascadeStyleSheet.css to ed
     margin: auto;
     height: 550px;
     width: 750px;
-    /*border: 6px solid blue;*/
 }
 
 #captcha-container{
@@ -28,7 +18,6 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/CascadeStyleSheet.css to ed
     height: 500px;
     width: 740px;
     border: 6px solid purple;
-    /*overflow: hidden;*/
 }
 
 #captcha-image {
@@ -83,7 +72,6 @@ h1,h3 {
     height: 600px;
     width: 750px;
     text-align: center;
-    /*border: solid 2px orange;*/
 }
 
 h1#take_note{
