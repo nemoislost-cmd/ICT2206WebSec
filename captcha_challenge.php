@@ -11,12 +11,22 @@ if (!isset($_SESSION['session_completed_test'])) {
 if (!isset($_SESSION["session_image_answer"])) {
     // Define the coordinates of the hidden object for the puzzle
     $images_with_answers = array(
-        "images/captcha_images/question1.jpg" => array("question" => "Find the wolf", "min_x" => 500, "max_x" => 600, "min_y" => 136, "max_y" => 195),
-        "images/captcha_images/question2.jpg" => array("question" => "Find the bear", "min_x" => 183, "max_x" => 251, "min_y" => 210, "max_y" => 258),
-        "images/captcha_images/question3.jpg" => array("question" => "Find the cat", "min_x" => 284, "max_x" => 328, "min_y" => 376, "max_y" => 423),
-        "images/captcha_images/question4.jpg" => array("question" => "Find the spotless dog", "min_x" => 477, "max_x" => 514, "min_y" => 61, "max_y" => 179),
-        "images/captcha_images/question5.jpg" => array("question" => "Find the spotless pig", "min_x" => 477, "max_x" => 514, "min_y" => 61, "max_y" => 179)
-    );
+//        "image/question15.jpg" => array("question" => "Find the wolf", "min_x" => 256, "max_x" => 283, "min_y" => 257, "max_y" => 279)
+"image/question1.jpg" => array("question" => "Find the wolf", "min_x" => 500, "max_x" => 600, "min_y" => 136, "max_y" => 195),
+"image/question2.jpg" => array("question" => "Find the bear", "min_x" => 183, "max_x" => 251, "min_y" => 210, "max_y" => 258),
+"image/question3.jpg" => array("question" => "Find the cat", "min_x" => 284, "max_x" => 328, "min_y" => 376, "max_y" => 423),
+"image/question4.jpg" => array("question" => "Find the spotless dog", "min_x" => 477, "max_x" => 514, "min_y" => 61, "max_y" => 179),
+"image/question5.jpg" => array("question" => "Find the butterfly", "min_x" => 239, "max_x" => 254, "min_y" => 228, "max_y" => 244),
+"image/question6.jpg" => array("question" => "Find the thief", "min_x" => 363, "max_x" => 421, "min_y" => 54, "max_y" => 194),
+"image/question7.jpg" => array("question" => "Find the without button eyes", "min_x" => 205, "max_x" => 275, "min_y" => 190, "max_y" => 247),
+"image/question8.jpg" => array("question" => "Find the frog", "min_x" => 227, "max_x" => 303, "min_y" => 26, "max_y" => 71),
+"image/question9.jpg" => array("question" => "Find the panda", "min_x" => 244, "max_x" => 307, "min_y" => 91, "max_y" => 154),
+"image/question10.jpg" => array("question" => "Find the red toy car", "min_x" => 227, "max_x" => 243, "min_y" => 375, "max_y" => 392),
+"image/question11.jpg" => array("question" => "Find the pineapple", "min_x" => 164, "max_x" => 214, "min_y" => 379, "max_y" => 414),
+"image/question12.jpg" => array("question" => "Find the cup of coffee", "min_x" => 423, "max_x" => 436, "min_y" => 335, "max_y" => 357),
+"image/question13.jpg" => array("question" => "Find the crown", "min_x" => 575, "max_x" => 590, "min_y" => 133, "max_y" => 159),
+"image/question14.jpg" => array("question" => "Find the hat", "min_x" => 256, "max_x" => 283, "min_y" => 257, "max_y" => 279)
+);
     $_SESSION["session_image_answer"] = $images_with_answers;
     // Select a random image from the list
     $random_image = array_rand($images_with_answers);
