@@ -126,49 +126,84 @@ if (isset($_POST["logout"])) {
             <h1>Welcome, <?php echo $_SESSION["username"]; ?>!</h1>
             <h2> 
 <?php
-require_once('db_connect.php');
-$daysql = "SELECT * FROM color_data WHERE username='" . $_SESSION["username"] . "' AND test_period='day' ";
-$nightsql = "SELECT * FROM color_data WHERE username='" . $_SESSION["username"] . "' AND test_period='night' ";
-$dayresult = mysqli_query($conn, $daysql);
-$nightresult = mysqli_query($conn, $nightsql);
+require_once "db_connect.php";
+$daysql_color =
+    "SELECT * FROM color_data WHERE username='" .
+    $_SESSION["username"] .
+    "' AND test_period='day' ";
+$daysql_captcha =
+    "SELECT * FROM captcha_data WHERE username='" .
+    $_SESSION["username"] .
+    "' AND test_period='day' ";
+$nightsql_color =
+    "SELECT * FROM color_data WHERE username='" .
+    $_SESSION["username"] .
+    "' AND test_period='night' ";
+$nightsql_captcha =
+    "SELECT * FROM captcha_data WHERE username='" .
+    $_SESSION["username"] .
+    "' AND test_period='night' ";
+$dayresult_color = mysqli_query($conn, $daysql_color);
+$nightresult_color = mysqli_query($conn, $nightsql_color);
+$dayresult_captcha = mysqli_query($conn, $daysql_captcha);
+$nightresult_captcha = mysqli_query($conn, $nightsql_captcha);
 $currentHour = date("H");
-if (mysqli_num_rows($dayresult) == 0) {
-    $_SESSION['day_records'] = 0;
+if (
+    mysqli_num_rows($dayresult_color) == 0 &&
+    mysqli_num_rows($dayresult_captcha) == 0
+) {
+    $_SESSION["day_records"] = 0;
     echo "DAY RECORDS NOT FOUND. <br>";
 } else {
-    $_SESSION['day_records'] = 1;
+    $_SESSION["day_records"] = 1;
     echo "DAY RECORDS PRESENT <br>";
 }
 
-if (mysqli_num_rows($nightresult) == 0) {
-    $_SESSION['night_records'] = 0;
+if (
+    mysqli_num_rows($nightresult_color) == 0 &&
+    mysqli_num_rows($nightresult_captcha) == 0
+) {
+    $_SESSION["night_records"] = 0;
     echo "NIGHT RECORDS NOT FOUND <br>";
 } else {
-    $_SESSION['night_records'] = 1;
+    $_SESSION["night_records"] = 1;
     echo "NIGHT RECORDS PRESENT <br>";
 }
 if ($currentHour >= 7 && $currentHour < 19) {
     echo "Currently in Day Period  <br> ";
-    $_SESSION['time_period'] = "day";
+    $_SESSION["time_period"] = "day";
 } else {
-
     echo "Currently Night Period <br> ";
-    $_SESSION['time_period'] = "night";
+    $_SESSION["time_period"] = "night";
 }
-if (isset($_SESSION['target_date'])) {
-    $targetDate = $_SESSION['target_date'];
-    // Format the date and time
-    $formattedDate = date('M j, Y g:i A', strtotime($targetDate));
+$query_countdown =
+    "SELECT futuretimestamp FROM color_testcase WHERE username='" .
+    $_SESSION["username"] .
+    "' AND device='trackpad'";
+$result_countdown = mysqli_query($conn, $query_countdown);
+if (mysqli_num_rows($result_countdown) > 0) {
+    while ($row = mysqli_fetch_assoc($result_countdown)) {
+        $_SESSION["target_date"] = $row["futuretimestamp"];
+        // Access other columns as needed
+    }
+} else {
+}
+// Format the date and time
+$formattedDate = date("M j, Y g:i A", strtotime($_SESSION["target_date"]));
 
 // Check if the target date is between 7am and 7pm
-    $hour = date('H', strtotime($targetDate));
-    if ($hour >= 7 && $hour < 19) {
-        $message = "Day period will be available after $formattedDate";
-        echo $message;
-    } else {
-        $message = "Night period will be available after $formattedDate";
-        echo $message;
-    }
+$hour = date("H", strtotime($_SESSION["target_date"]));
+$current_hour = date("H");
+if ($hour >= 7 && $hour < 19 && $hour != $current_hour) {
+    $message = "Day period will be available after $formattedDate";
+    $_SESSION["daynotdone"] = 1;
+    $_SESSION["nightnotdone"] = 0;
+    echo $message;
+} else if ($hour != $current_hour) {
+    $message = "Night period will be available after $formattedDate";
+    $_SESSION["nightnotdone"] = 1;
+    $_SESSION["daynotdone"]=0;
+    echo $message;
 }
 ?>
 
@@ -311,35 +346,39 @@ if (isset($_SESSION['target_date'])) {
 
         <script>
 
-            const targetDateElem = document.querySelector(".target-date");
+            //const targetDateElem = document.querySelector(".target-date");
+function checkSessionDay() {
+    var curr_period = '<?= $_SESSION["time_period"] ?>';
+    var day_records = '<?= $_SESSION["day_records"] ?>';
+    var day_countdown = '<?= $_SESSION["daynotdone"] ?>';
 
+    if (curr_period === "day" && day_records === '0') {
+        window.location.href = 'captcha_challenge.php';
+    } else if (day_records === '1') {
+        alert("403 Forbidden. Records already exist!");
+    } else if (day_countdown === '1') {
+        alert("403 Forbidden. Wait for the countdown to finish to access this resource!");
+    } else {
+        alert("403 Forbidden. This resource cannot be accessed at this time!");
+    }
+}
 
-            function checkSessionDay() {
+function checkSessionNight() {
+    var curr_period = '<?= $_SESSION["time_period"] ?>';
+    var night_records = '<?= $_SESSION["night_records"] ?>';
+    var night_countdown = '<?= $_SESSION["nightnotdone"] ?>';
 
-                var curr_period = '<?= $_SESSION['time_period'] ?>';
-                var day_records = '<?= $_SESSION['day_records'] ?>';
+    if (curr_period === "night" && night_records === '0') {
+        window.location.href = 'captcha_challenge.php';
+    } else if (night_records === '1') {
+        alert("403 Forbidden. Records already exist!");
+    } else if (night_countdown === '1') {
+        alert("403 Forbidden. Wait for the countdown to finish to access this resource!");
+    } else {
+        alert("403 Forbidden. This resource cannot be accessed at this time!");
+    }
+}
 
-                if (curr_period === "day" && day_records === '0') {
-                    window.location.href = 'captcha_challenge.php';
-                } else if (day_records === '1') {
-                    alert("403 Forbidden. Records already exist!");
-
-                } else {
-                    alert("403 Forbidden. This resource cannot be accessed at this time!");
-                }
-            }
-            function checkSessionNight() {
-                var curr_period = '<?= $_SESSION['time_period'] ?>';
-                var night_records = '<?= $_SESSION['night_records'] ?>';
-                if (curr_period === "night" && night_records === '0') {
-                    window.location.href = 'captcha_challenge.php';
-                } else if (night_records === '1') {
-                    alert("403 Forbidden. Records already exist!");
-
-                } else {
-                    alert("403 Forbidden. This resource cannot be accessed at this time!");
-                }
-            }
 
             var hoursElement = document.querySelector('.hours .number');
             var minsElement = document.querySelector('.mins .number');
@@ -363,6 +402,7 @@ if (isset($_SESSION['target_date'])) {
                 xhr.onreadystatechange = function () {
                     if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
                         var response = JSON.parse(this.responseText);
+                        console.log(response);
                         var remainingTime = response.remainingTime;
                         // Update the countdown timer based on the remaining time
                         if (remainingTime <= 0) {
@@ -370,6 +410,7 @@ if (isset($_SESSION['target_date'])) {
                             minsElement.textContent = '00';
                             secsElement.textContent = '00';
                             sendCountdownReminderEmail();
+                            
                         } else {
                             var hours = Math.floor(remainingTime / 3600);
                             var mins = Math.floor((remainingTime % 3600) / 60);

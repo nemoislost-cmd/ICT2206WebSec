@@ -69,8 +69,6 @@ captchaImage.addEventListener("click", function (event)
     circle = createCircle(clickedX, clickedY);
     captchaContainer.appendChild(circle);
 
-    // console.log("x value -> " + clickedX);
-    // console.log("y value -> " + clickedY);
     document.getElementById("clickedX").value = clickedX;
     document.getElementById("clickedY").value = clickedY;
 
@@ -106,10 +104,10 @@ function createCircle(x, y) {
         circle = createCircle(clickedX, clickedY);
         captchaContainer.appendChild(circle);
 
-        console.log("x value -> " + clickedX);
-        console.log("y value -> " + clickedY);
         document.getElementById("clickedX").value = clickedX;
         document.getElementById("clickedY").value = clickedY;
+
+        captchaEndTime = new Date().getTime();
     });
 
     return circle;
