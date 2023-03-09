@@ -40,7 +40,7 @@ if (isset($_SESSION['reminderMail'])) {
         
         if($mail->send()){
             $_SESSION['reminderMail']=1;
-            $_SESSION['startCountdown']=0;
+            //$_SESSION['startCountdown']=0;
            header('Content-Type: text/plain');
            echo "Mail  sent";
         } else {
