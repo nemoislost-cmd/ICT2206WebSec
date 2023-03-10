@@ -21,7 +21,7 @@ if (!isset($_SESSION["session_image_answer"])) {
         "images/captcha_images/question7.jpg" => array("question" => "Find the red hangbag", "min_x" => 373, "max_x" => 405, "min_y" => 332, "max_y" => 375),
         "images/captcha_images/question8.jpg" => array("question" => "Find the pink hairdryer", "min_x" => 371, "max_x" => 415, "min_y" => 263, "max_y" => 284),
         "images/captcha_images/question9.jpg" => array("question" => "Find the yellow pillow", "min_x" => 357, "max_x" => 405, "min_y" => 228, "max_y" => 265),
-        "images/captcha_images/question10.jpg" => array("question" => "Find the red dustbin", "min_x" => 370, "max_x" => 398, "min_y" => 368, "max_y" => 423),
+        "images/captcha_images/question10.jpg" => array("question" => "Find the sliver dustbin", "min_x" => 370, "max_x" => 398, "min_y" => 368, "max_y" => 423),
         "images/captcha_images/question11.jpg" => array("question" => "Find the grape", "min_x" => 167, "max_x" => 233, "min_y" => 239, "max_y" => 265),
         "images/captcha_images/question12.jpg" => array("question" => "Find the cup of red heels", "min_x" => 178, "max_x" => 245, "min_y" => 54, "max_y" => 89),
         "images/captcha_images/question13.jpg" => array("question" => "Find the flowers in a vase", "min_x" => 329, "max_x" => 363, "min_y" => 140, "max_y" => 194),
