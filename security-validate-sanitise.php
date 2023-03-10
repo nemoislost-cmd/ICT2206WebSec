@@ -83,10 +83,11 @@ function validate_question_answer($input_string, $type="Question"){
     $message["Error"][$type] = $type ." is required";
   } else {
     $input_string = filter_var(trim($input_string), FILTER_SANITIZE_STRING);
-    if (!preg_match("/^[a-zA-Z0-9\s',?]+$/", $input_string)) {
+    if (!preg_match("/^[a-zA-Z0-9\s-',?]+$/", $input_string)) {
       if ($type != "Question"){
         $message["Error"][$type] = $type ." can only contain letters and whitespace, numbers and single quotes.";
       }else{
+        echo $input_string;
         $message["Error"][$type] = $type ." can't be modified.";
       }
     }
