@@ -33,7 +33,8 @@ if (!isset($_SESSION["session_image_answer"])) {
         "images/captcha_images/question19.jpg" => array("question" => "Find tweety bird", "min_x" => 336, "max_x" => 403, "min_y" => 361, "max_y" => 456),
         "images/captcha_images/question20.jpg" => array("question" => "Find sitch", "min_x" => 361, "max_x" => 442, "min_y" => 220, "max_y" => 360),
         "images/captcha_images/question21.jpg" => array("question" => "Find baby boss", "min_x" => 424, "max_x" => 492, "min_y" => 141, "max_y" => 225),
-        "images/captcha_images/question22.jpg" => array("question" => "Find Perry the platypus", "min_x" => 230, "max_x" => 349, "min_y" => 383, "max_y" => 424)
+        "images/captcha_images/question22.jpg" => array("question" => "Find Perry the platypus", "min_x" => 230, "max_x" => 349, "min_y" => 383, "max_y" => 424),
+        "images/captcha_images/question23.jpg" => array("question" => "Find Spongebob", "min_x" => 241, "max_x" => 343, "min_y" => 330, "max_y" => 404)
     );
     $_SESSION["session_image_answer"] = $images_with_answers;
     // Select a random image from the list using array_rand() function
