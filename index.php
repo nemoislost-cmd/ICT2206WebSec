@@ -169,11 +169,14 @@ if (
     $_SESSION["night_records"] = 1;
     echo "NIGHT RECORDS PRESENT <br>";
 }
+echo "Day Period is from 7am to 7pm <br>";
+echo "Night Period is from 7pm to 7am <br>";
+
 if ($currentHour >= 7 && $currentHour < 19) {
-    echo "Currently in Day Period  <br> ";
+    echo "Currently in Day Period.   <br> ";
     $_SESSION["time_period"] = "day";
 } else {
-    echo "Currently Night Period <br> ";
+    echo "Currently Night Period. <br> ";
     $_SESSION["time_period"] = "night";
 }
 $query_countdown =
@@ -188,23 +191,55 @@ if (mysqli_num_rows($result_countdown) > 0) {
     }
 } else {
 }
+
+
 // Format the date and time
 $formattedDate = date("M j, Y g:i A", strtotime($_SESSION["target_date"]));
-
-// Check if the target date is between 7am and 7pm
-$hour = date("H", strtotime($_SESSION["target_date"]));
-$current_hour = date("H");
-if ($hour >= 7 && $hour < 19 && $hour != $current_hour) {
-    $message = "Day period will be available after $formattedDate";
-    $_SESSION["daynotdone"] = 1;
-    $_SESSION["nightnotdone"] = 0;
-    echo $message;
-} else if ($hour != $current_hour) {
-    $message = "Night period will be available after $formattedDate";
-    $_SESSION["nightnotdone"] = 1;
-    $_SESSION["daynotdone"]=0;
-    echo $message;
+$currTime = date("M j, Y g:i A");
+if (strtotime($formattedDate) < strtotime($currTime)) {
+    $_SESSION['countdownover']=1;
+} else {
+    $_SESSION['countdownover']=0;
+    // do something else
 }
+
+if ($_SESSION['day_records'] ==1){
+    if ($_SESSION['night_records'] ==0){
+        if ($_SESSION['countdownover']==1){ # day records exist night records dont countdown is ovver
+            $_SESSION["nightnotdone"] = 1; // NIGHT RECORDS IS NOT DONE
+            $_SESSION["daynotdone"] = 0; // DAY RECORDS IS DONE
+        }else{
+            $_SESSION['countdownNight'] = 1;                                    # day records exist night records dont countdown is still running
+             $message = "Day period will be available after $formattedDate";
+             echo $message;
+            
+        }
+        
+    }else{
+        $_SESSION["nightnotdone"] = 0; #both day and night records exist
+        $_SESSION["daynotdone"] = 0; #both day and night records exist
+    }
+}else{
+     if ($_SESSION['night_records'] == 1){ 
+         if ($_SESSION['countdownover']==1){ # day records dont exists night records exist countdown is over
+            $_SESSION["nightnotdone"] = 0; // NIGHT RECORDS IS DONE
+            $_SESSION["daynotdone"] = 1; // DAY RECORDS IS NOT DONE
+         }else{
+              $_SESSION['countdownDay'] = 1;
+              $message = "Day period will be available after $formattedDate";   
+              echo $message ;                  # day records do not exist night records exist countdown is still running 
+         }
+            
+     }else{
+         $_SESSION["nightnotdone"] = 1;
+         $_SESSION["daytnotdone"] = 1;
+     }
+}
+    
+    
+    
+
+
 ?>
 
             </h2>
@@ -351,14 +386,18 @@ function checkSessionDay() {
     var curr_period = '<?= $_SESSION["time_period"] ?>';
     var day_records = '<?= $_SESSION["day_records"] ?>';
     var day_countdown = '<?= $_SESSION["daynotdone"] ?>';
+    var countdownStatus = '<?= $_SESSION["countdownover"] ?>';
 
     if (curr_period === "day" && day_records === '0') {
         window.location.href = 'captcha_challenge.php';
     } else if (day_records === '1') {
         alert("403 Forbidden. Records already exist!");
-    } else if (day_countdown === '1') {
+    } else if (day_countdown === '1' && countdownStatus !== '1') {
         alert("403 Forbidden. Wait for the countdown to finish to access this resource!");
-    } else {
+    } else if (day_countdown === '0' && countdownStatus === '1') {
+        alert("403 Forbidden. Countdown is over but current time does not allow for access to this resource!");
+    }
+    else {
         alert("403 Forbidden. This resource cannot be accessed at this time!");
     }
 }
@@ -367,14 +406,17 @@ function checkSessionNight() {
     var curr_period = '<?= $_SESSION["time_period"] ?>';
     var night_records = '<?= $_SESSION["night_records"] ?>';
     var night_countdown = '<?= $_SESSION["nightnotdone"] ?>';
-
+   var countdownStatus = '<?= $_SESSION["countdownover"] ?>';
     if (curr_period === "night" && night_records === '0') {
         window.location.href = 'captcha_challenge.php';
     } else if (night_records === '1') {
         alert("403 Forbidden. Records already exist!");
-    } else if (night_countdown === '1') {
+    } else if (night_countdown === '1' && countdownStatus !== '1') {
         alert("403 Forbidden. Wait for the countdown to finish to access this resource!");
-    } else {
+    } else if (night_countdown === '1' && countdownStatus === '1') {
+        alert("403 Forbidden. Countdown is over but current time does not allow for access to this resource!");
+    }
+    else {
         alert("403 Forbidden. This resource cannot be accessed at this time!");
     }
 }
@@ -409,6 +451,7 @@ function checkSessionNight() {
                             hoursElement.textContent = '00';
                             minsElement.textContent = '00';
                             secsElement.textContent = '00';
+                            
                             sendCountdownReminderEmail();
                             
                         } else {
