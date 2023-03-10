@@ -31,8 +31,9 @@ if (!isset($_SESSION["session_image_answer"])) {
         "images/captcha_images/question17.jpg" => array("question" => "Find the basketball", "min_x" => 483, "max_x" => 530, "min_y" => 37, "max_y" => 81),
         "images/captcha_images/question18.jpg" => array("question" => "Find the teddy bear", "min_x" => 481, "max_x" => 526, "min_y" => 244, "max_y" => 275),
         "images/captcha_images/question19.jpg" => array("question" => "Find tweety bird", "min_x" => 336, "max_x" => 403, "min_y" => 361, "max_y" => 456),
-        "images/captcha_images/question20.jpg" => array("question" => "Find sitch", "min_x" => 296, "max_x" => 478, "min_y" => 212, "max_y" => 436),
-        "images/captcha_images/question21.jpg" => array("question" => "Find baby boss", "min_x" => 303, "max_x" => 436, "min_y" => 133, "max_y" => 414),
+        "images/captcha_images/question20.jpg" => array("question" => "Find sitch", "min_x" => 361, "max_x" => 442, "min_y" => 220, "max_y" => 360),
+        "images/captcha_images/question21.jpg" => array("question" => "Find baby boss", "min_x" => 424, "max_x" => 492, "min_y" => 141, "max_y" => 225),
+        "images/captcha_images/question22.jpg" => array("question" => "Find Perry the platypus", "min_x" => 230, "max_x" => 349, "min_y" => 383, "max_y" => 424)
     );
     $_SESSION["session_image_answer"] = $images_with_answers;
     // Select a random image from the list using array_rand() function
