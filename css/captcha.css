@@ -1,0 +1,96 @@
+#main-container{
+    position: relative;
+    right: 0;
+    left: 0;
+    top: 20px;
+    bottom: 0;
+    margin: auto;
+    height: 550px;
+    width: 750px;
+}
+
+#captcha-container{
+    position: absolute;
+    right: 0;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    height: 500px;
+    width: 740px;
+    border: 6px solid purple;
+}
+
+#captcha-image {
+    position: absolute;
+    height: 500px;
+    width: 740px;
+    object-fit: scale-down;
+}
+
+#btn_show_image{
+     position: absolute;
+     height: 30px;
+     width: 240px;
+     left: 250px;
+     top: 235px;
+     font-size: 18px;
+}
+
+h1,h3 {
+    text-align: center;
+}
+
+#btn_submit{
+    position: absolute;
+    width: 60px;
+    left: 345px;
+    right: 345px;
+    top: 525px;
+
+}
+
+.circle {
+  position: absolute;
+  display: none;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  border: solid 4px red;
+}
+
+.circle {
+  display: block;
+}
+
+#content-container{
+    position: fixed;
+    right: 0;
+    left: 0;
+    top: 20px;
+    bottom: 0;
+    margin: auto;
+    height: 600px;
+    width: 750px;
+    text-align: center;
+}
+
+h1#take_note{
+    font-size: 90px;
+    color: red;
+}
+
+#test_disclaimer{
+    font-size: 20px;
+}
+
+#start_test{
+    width: 150px;
+    height: 30px;
+    font-size: 18px;
+    margin-top: 40px;
+}
+
+#device_to_use{
+    font-size: 50px;
+    font-weight: 800;
+}

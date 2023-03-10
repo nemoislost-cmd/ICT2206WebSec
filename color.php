@@ -1,4 +1,13 @@
-<!DOCTYPE html>
+<?php
+session_start();
+
+// Check if user is logged in
+if (!isset($_SESSION["username"])) {
+    // Redirect to login page
+    header("Location: login.php");
+    exit();
+}
+?>
 <html>
     <head>
         <meta charset="UTF-8">
@@ -8,9 +17,6 @@
 	</script>
         
     </head>
-           <?php
-       session_start();
-       ?>
         <link rel="stylesheet" href="css/color.css">
     </head>
     <body>
@@ -37,10 +43,10 @@
 </div>
         </div>
         <div class="buttondiv">
-            <form id ="color-data" action="color_verification.php" method ="post" onsubmit ="return sendData(event)">
+            <form id ="color-data" action="verification.php" method ="post" onsubmit ="return sendData(event)">
             <input type ="hidden" name="data" id="data" value="">
             <input type ="hidden" name="timestamp" id="timestamp" value="">
-            <button class="button" onclick="sendData(event)" type="submit">Finish</button>
+            <button class="button" onclick="sendData(event)" type="submit">Next</button>
             </form>
         </div>
         <script>

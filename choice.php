@@ -1,44 +1,52 @@
 <?php
+$answer = $new_answer = $errorMsg = "";
 session_start();
 $success = true;
 
-// Check if user is logged in
 if (!isset($_SESSION["username"])) {
-    // Redirect to login page
     header("Location: login.php");
     exit();
 }
 
-// Get user's security question and answer from database
 $username = $_SESSION["username"];
 
-function checkExistingData()
-{
-    global $username, $errorMsg, $success;
-    // Create database connection.
+if (!empty($_POST["answer"])){
+    $new_answer = sanitize_input($_POST["answer"]);
+    $_SESSION["answer"] = $new_answer;
+}
+
+function sanitize_input($data){
+    $data = trim($data);
+    $data = stripslashes($data);
+    $data = htmlspecialchars($data);
+    return $data;
+}
+
+function checkUserData(){
+    global $username, $answer, $new_answer, $errorMsg, $success;
     $config = parse_ini_file('../private/db-config.ini');
     $conn = new mysqli($config['servername'], $config['username'],
     $config['password'], $config['dbname']);
-    // Check connection
-    if ($conn->connect_error)
-    {
+    if ($conn->connect_error) {
         $errorMsg = "Connection failed: " . $conn->connect_error;
         $success = false;
-    }
-    else
-    {
-        // Prepare the statement:
-        $stmt = $conn->prepare("SELECT captcha_data.username, color_data.username 
-            FROM captcha_data 
-            INNER JOIN color_data
-            ON captcha_data.username = color_data.username
-            WHERE color_data.username=?");
-        // Bind & execute the query statement:
+    }  else {
+        $stmt = $conn->prepare("SELECT answer 
+            FROM user_accounts 
+            WHERE username=?");
         $stmt->bind_param("s", $username);
         $stmt->execute();
         $result = $stmt->get_result();
-        if ($result->num_rows < 1)
-        {
+        if ($result->num_rows == 1) {
+            $row = $result->fetch_assoc();
+            $answer = $row["answer"];
+            if ($answer != $new_answer) {
+                $_SESSION["intended_user"]= "no";
+            } else{
+                $_SESSION["intended_user"]= "yes";
+            }
+        }
+        else {
             $errorMsg = "User data not found!";
             $success = false;
         }
@@ -47,35 +55,27 @@ function checkExistingData()
     $conn->close();
 }
 
-function checkDayData()
-{
+function checkDayData(){
     global $username, $errorMsg, $success;
-    // Create database connection.
     $config = parse_ini_file('../private/db-config.ini');
     $conn = new mysqli($config['servername'], $config['username'],
     $config['password'], $config['dbname']);
     // Check connection
-    if ($conn->connect_error)
-    {
+    if ($conn->connect_error){
         $errorMsg = "Connection failed: " . $conn->connect_error;
         $success = false;
-    }
-    else
-    {
-        // Prepare the statement:
-        $stmt = $conn->prepare("SELECT captcha_data.username, color_data.username 
+    } else {
+        $stmt = $conn->prepare("SELECT captcha_data.id, color_data.id 
             FROM captcha_data 
             INNER JOIN color_data
             ON captcha_data.username = color_data.username
             WHERE color_data.test_period='day'
             AND captcha_data.test_period='day'
             AND color_data.username=?");
-        // Bind & execute the query statement:
         $stmt->bind_param("s", $username);
         $stmt->execute();
         $result = $stmt->get_result();
-        if ($result->num_rows < 1)
-        {
+        if ($result->num_rows < 4) {
             $errorMsg = "Day data not found!";
             $success = false;
         }
@@ -84,35 +84,26 @@ function checkDayData()
     $conn->close();
 }
 
-function checkNightData()
-{
+function checkNightData(){
     global $username, $errorMsg, $success;
-    // Create database connection.
     $config = parse_ini_file('../private/db-config.ini');
     $conn = new mysqli($config['servername'], $config['username'],
     $config['password'], $config['dbname']);
-    // Check connection
-    if ($conn->connect_error)
-    {
+    if ($conn->connect_error) {
         $errorMsg = "Connection failed: " . $conn->connect_error;
         $success = false;
-    }
-    else
-    {
-        // Prepare the statement:
-        $stmt = $conn->prepare("SELECT captcha_data.username, color_data.username 
+    } else {
+        $stmt = $conn->prepare("SELECT captcha_data.id, color_data.id 
             FROM captcha_data 
             INNER JOIN color_data
             ON captcha_data.username = color_data.username
             WHERE color_data.test_period='night'
             AND captcha_data.test_period='night'
             AND color_data.username=?");
-        // Bind & execute the query statement:
         $stmt->bind_param("s", $username);
         $stmt->execute();
         $result = $stmt->get_result();
-        if ($result->num_rows < 1)
-        {
+        if ($result->num_rows < 4) {
             $errorMsg = "Night data not found!";
             $success = false;
         }
@@ -121,35 +112,26 @@ function checkNightData()
     $conn->close();
 }
 
-function checkTrackpadData()
-{
+function checkTrackpadData(){
     global $username, $errorMsg, $success;
-    // Create database connection.
     $config = parse_ini_file('../private/db-config.ini');
     $conn = new mysqli($config['servername'], $config['username'],
     $config['password'], $config['dbname']);
-    // Check connection
-    if ($conn->connect_error)
-    {
+    if ($conn->connect_error){
         $errorMsg = "Connection failed: " . $conn->connect_error;
         $success = false;
-    }
-    else
-    {
-        // Prepare the statement:
-        $stmt = $conn->prepare("SELECT captcha_data.username, color_data.username 
+    } else {
+        $stmt = $conn->prepare("SELECT captcha_data.id, color_data.id 
             FROM captcha_data 
             INNER JOIN color_data
             ON captcha_data.username = color_data.username
             WHERE color_data.device='trackpad'
             AND captcha_data.device='trackpad'
             AND color_data.username=?");
-        // Bind & execute the query statement:
         $stmt->bind_param("s", $username);
         $stmt->execute();
         $result = $stmt->get_result();
-        if ($result->num_rows < 2)
-        {
+        if ($result->num_rows < 4) {
             $errorMsg = "Trackpad data incomplete!";
             $success = false;
         }
@@ -158,35 +140,26 @@ function checkTrackpadData()
     $conn->close();
 }
 
-function checkMouseData()
-{
+function checkMouseData(){
     global $username, $errorMsg, $success;
-    // Create database connection.
     $config = parse_ini_file('../private/db-config.ini');
     $conn = new mysqli($config['servername'], $config['username'],
     $config['password'], $config['dbname']);
-    // Check connection
-    if ($conn->connect_error)
-    {
+    if ($conn->connect_error) {
         $errorMsg = "Connection failed: " . $conn->connect_error;
         $success = false;
-    }
-    else
-    {
-        // Prepare the statement:
-        $stmt = $conn->prepare("SELECT captcha_data.username, color_data.username 
+    } else{
+        $stmt = $conn->prepare("SELECT captcha_data.id, color_data.id 
             FROM captcha_data 
             INNER JOIN color_data
             ON captcha_data.username = color_data.username
             WHERE color_data.device='mouse'
             AND captcha_data.device='mouse'
             AND color_data.username=?");
-        // Bind & execute the query statement:
         $stmt->bind_param("s", $username);
         $stmt->execute();
         $result = $stmt->get_result();
-        if ($result->num_rows < 2)
-        {
+        if ($result->num_rows < 4) {
             $errorMsg = "Mouse data incomplete!";
             $success = false;
         }
@@ -199,13 +172,12 @@ function checkPeriod(){
     $currentHour = date("H");
     if ($currentHour >= 7 && $currentHour < 19) {
         $_SESSION['period'] = "day";
-    } 
-    else {
+    } else {
         $_SESSION['period'] = "night";
     } 
 }
 
-checkExistingData();
+checkUserData();
 checkDayData();
 checkNightData();
 checkTrackpadData();
@@ -230,10 +202,7 @@ checkPeriod();
         <div class="card shadow-sm">
           <div class="card-body">
               <?php
-            if ($success)
-            {
-                echo "<h2>Login successful!</h2>";
-                echo "<h4>Welcome back, " . $_SESSION["name"] . ".</h4>";
+            if ($success) {
                 echo "<h4>Choose either trackpad or mouse for your next step.</h4>";?>
                 <div class="text-center mt-4 pt-1 pb-1">
                     <a href='trackpad.php' class="btn btn-primary btn-block fa-lg gradient-custom-2 mb-3" >Trackpad</a>
@@ -242,23 +211,18 @@ checkPeriod();
                     <a href='mouse.php' class="btn btn-primary btn-block fa-lg gradient-custom-2 mb-3" >Mouse</a>
               </div>
                 <?php
-            }
-            else
-            {
+            } else {
                 echo "<h2>Oops!</h2>";
                 echo "<h4>The following errors were detected:</h4>";
                 echo "<p>" . $errorMsg . "</p>";?>          
             <?php
             }
             ?>
-              
-              
           </div>
         </div>
       </div>
     </div>
   </div>
-
     <?php
         include "footer.php";
     ?>

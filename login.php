@@ -1,89 +1,66 @@
 <?php
-// Start session
-session_start();
+$username = $password = $errorMsg = $username_err = $password_err = "";
 
-// Include the database configuration file
-require_once 'db.php';
-
-// Define variables and initialize with empty values
-$username = $password = "";
-$username_err = $password_err = "";
-
-// Checks if the HTTP request method is GET, which is the method used by browsers to request a new page or refresh the current page
 if ($_SERVER["REQUEST_METHOD"] == "GET") {
   unset($_POST);
 }
 
-// Processing form data when form is submitted
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
+function sanitize_input($data)
+{
+    $data = trim($data);
+    $data = stripslashes($data);
+    $data = htmlspecialchars($data);
+    return $data;
+}
 
-  // Validate username
-  if (empty(trim($_POST["username"]))) {
-    $username_err = "Please enter your username.";
-  } else {
-    $username = trim($_POST["username"]);
-  }
-
-  // Validate password
-  if (empty(trim($_POST["password"]))) {
-    $password_err = "Please enter your password.";
-  } else {
-    $password = trim($_POST["password"]);
-  }
-
-  // Check input errors before attempting to login
-  if (empty($username_err) && empty($password_err)) {
-
-    // Prepare a select statement
-    $sql = "SELECT username, password, name FROM user_accounts WHERE username = :username";
-
-    if ($stmt = $pdo->prepare($sql)) {
-      // Bind the value of username to the prepared statement 
-      $stmt->bindValue(":username", $username, PDO::PARAM_STR);
-
-      // Attempt to execute the prepared statement
-      if ($stmt->execute()) {
-        // Check if username exists
-        if ($stmt->rowCount() == 1) {
-          // Fetch the result
-          $row = $stmt->fetch(PDO::FETCH_ASSOC);
-          $username = $row["username"];
-          $password_hash = $row["password"];
-          $name = $row["name"];
-
-          // Verify password
-          if (password_verify($password, $password_hash)) {
-            // Password is correct, start a new session
-            session_start();
-
-            // Store data in session variables
-            $_SESSION["loggedin"] = true;
-            $_SESSION["username"] = $username;
-            $_SESSION["name"]= $name;
-
-            // Redirect to home page
-            header("location: choice.php");
-            exit();
-
-          } else {
-            // Display an error message if password is not valid
-            $password_err = "The password you entered was not valid.";
-          }
-        } else {
-          // Display an error message if username doesn't exist
-          $username_err = "No account found with that username.";
+function authenticateUser(){
+    global $username, $password, $pwd_hashed, $errorMsg, $success;
+    $config = parse_ini_file('../private/db-config.ini');
+    $conn = new mysqli($config['servername'], $config['username'],
+    $config['password'], $config['dbname']);
+    if ($conn->connect_error){
+        $errorMsg = "Connection failed: " . $conn->connect_error;
+        $success = false;
+    } else{
+        $stmt = $conn->prepare("SELECT password FROM user_accounts WHERE 
+        username=?");
+        $stmt->bind_param("s", $username);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        if ($result->num_rows == 1) {
+            $row = $result->fetch_assoc();
+            $pwd_hashed = $row["password"];
+            if (password_verify($password, $pwd_hashed)) {
+                session_start();
+                $_SESSION["username"] = $username;
+                header("location: security.php");
+                exit();
+            } else {
+                $errorMsg = "No account found.";
+            }
         }
-      } else {
-        echo "Oops! Something went wrong. Please try again later.";
-      }
-
-      // Close statement
-      unset($stmt);
+        else {
+            $errorMsg = "No account found.";
+        }
+        $stmt->close();
     }
-  }
+    $conn->close();
+}
 
-  // Close connection
-  unset($pdo);
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    if (empty($_POST["username"])) {
+        $username_err = "Username is required.";
+    } else {
+        $username = sanitize_input($_POST["username"]);
+    }
+
+    if (empty($_POST["password"])){
+        $password_err = "Password is required.<br>";
+    } else {
+        $password = sanitize_input($_POST["password"]);
+    }
+
+    authenticateUser();
 }
 ?>
 
@@ -130,11 +107,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                   <?php if (!empty($password_err)) : ?>
                     <div class="error text-danger mb-4"><?php echo $password_err; ?></div>
                   <?php endif; ?>
-
-                  <div class="text-center mt-4 pt-1 mb-5 pb-1">
+                    
+                    <?php if (!empty($errorMsg)) : ?>
+                    <div class="error text-danger mb-4"><?php echo $errorMsg; ?></div>
+                    <?php endif; ?>
+                    
+                    <div class="text-center mt-4 pt-1 mb-5 pb-1">
                     <input class="btn btn-primary btn-block fa-lg gradient-custom-2 mb-3" type="submit" value="Login">
-                    <a class="text-muted" href="forget_password.php">Forgot password?</a>
-                  </div>
+                    </div>
                     
                 </form>
 
@@ -142,10 +122,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </div>
             <div class="col-lg-6 d-flex align-items-center gradient-custom-2">
               <div class="text-white px-3 py-4 p-md-5 mx-md-4">
-                <h4 class="mb-4">We are AuthReact</h4>
-                <p class="small mb-0">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-                  tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud
-                  exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+                <h4 class="mb-4">What is AuthReact?</h4>
+                    <p class="small mb-0" style="text-align: justify;">Auth-React is an application developed by the team trying_not_to_die for the purpose of ICT 2206 Web Security. This application aims to be a POC for an experimental concept conceived by the team. Our team is trying to investigate the hypothesis of using human reaction time as a newer form of 2FA authentication to authenticate users into the system. We have developed a series of tests for the purpose of this experiment that will utilise human reaction time. We are also taking into account several factors that we are trying to investigate that will affect the human reaction time in general. </p>
               </div>
             </div>
           </div>

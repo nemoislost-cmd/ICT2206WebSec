@@ -34,8 +34,6 @@ function getSecurityQuestion()
         $result = $stmt->get_result();
         if ($result->num_rows > 0)
         {
-            // Note that email field is unique, so should only have
-            // one row in the result set.
             $row = $result->fetch_assoc();
             $question = $row["question"];
             $_SESSION["ques"] = $question;
@@ -72,7 +70,7 @@ getSecurityQuestion();
             {
                 echo "<h2> " . $question . "</h2>";
                 echo "<h4>Please key in the security answer.</h4>";?>
-                <form action="submit.php" method="post">
+                <form action="choice.php" method="post">
               <div class="form-group my-4">
                 <label for="answer">Answer:</label>
                 <input type="text" class="form-control" id="answer" name="answer" required placeholder="Enter answer">
@@ -82,12 +80,6 @@ getSecurityQuestion();
               </div>
             </form>
                 <?php
-            }
-            else
-            {
-                echo "<h2>Oops!</h2>";
-                echo "<h4>The following errors were detected:</h4>";
-                echo "<p>" . $errorMsg . "</p>";          
             }
             ?>
           </div>
