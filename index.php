@@ -202,6 +202,7 @@ if ($_SESSION['day_records'] ==1){
         if ($_SESSION['countdownover']==1){ # day records exist night records dont countdown is ovver
             $_SESSION["nightnotdone"] = 1; // NIGHT RECORDS IS NOT DONE
             $_SESSION["daynotdone"] = 0; // DAY RECORDS IS DONE
+            $_SESSION['countdownNight'] = 0;
         }else{
             $_SESSION['countdownNight'] = 1;                                    # day records exist night records dont countdown is still running
              $message = "Day period will be available after $formattedDate";
@@ -218,6 +219,7 @@ if ($_SESSION['day_records'] ==1){
          if ($_SESSION['countdownover']==1){ # day records dont exists night records exist countdown is over
             $_SESSION["nightnotdone"] = 0; // NIGHT RECORDS IS DONE
             $_SESSION["daynotdone"] = 1; // DAY RECORDS IS NOT DONE
+            $_SESSION['countdownDay'] = 0;
          }else{
               $_SESSION['countdownDay'] = 1;
               $message = "Day period will be available after $formattedDate";   
@@ -234,6 +236,9 @@ if ($_SESSION['day_records'] ==1){
 } else {
     $_SESSION["daynotdone"]=1;
     $_SESSION["nightnotdone"]=1;
+    $_SESSION["countdownover"] = -1;
+    $_SESSION['countdownNight'] = -1;
+    $_SESSION['countdownDay'] = -1;
     
     
 }
@@ -391,15 +396,15 @@ function checkSessionDay() {
     var curr_period = '<?= $_SESSION["time_period"] ?>';
     var day_records = '<?= $_SESSION["day_records"] ?>';
     var day_countdown = '<?= $_SESSION["daynotdone"] ?>';
-    var countdownStatus = '<?= $_SESSION["countdownover"] ?>';
+    var countdownStatus = '<?= $_SESSION['countdownDay'] ?>';
 
     if (curr_period === "day" && day_records === '0') {
         window.location.href = 'captcha_challenge.php';
     } else if (day_records === '1') {
         alert("403 Forbidden. Records already exist!");
-    } else if (day_countdown === '1' && countdownStatus !== '1') {
+    } else if (countdownStatus === '1') {
         alert("403 Forbidden. Wait for the countdown to finish to access this resource!");
-    } else if (day_countdown === '0' && countdownStatus === '1') {
+    } else if (countdownStatus === '0') {
         alert("403 Forbidden. Countdown is over but current time does not allow for access to this resource!");
     }
     else {
@@ -411,14 +416,14 @@ function checkSessionNight() {
     var curr_period = '<?= $_SESSION["time_period"] ?>';
     var night_records = '<?= $_SESSION["night_records"] ?>';
     var night_countdown = '<?= $_SESSION["nightnotdone"] ?>';
-   var countdownStatus = '<?= $_SESSION["countdownover"] ?>';
+    var countdownStatus = '<?= $_SESSION['countdownNight'] ?>';
     if (curr_period === "night" && night_records === '0') {
         window.location.href = 'captcha_challenge.php';
     } else if (night_records === '1') {
         alert("403 Forbidden. Records already exist!");
-    } else if (night_countdown === '1' && countdownStatus !== '1') {
+    } else if (countdownStatus === '1') {
         alert("403 Forbidden. Wait for the countdown to finish to access this resource!");
-    } else if (night_countdown === '1' && countdownStatus === '1') {
+    } else if (countdownStatus === '0') {
         alert("403 Forbidden. Countdown is over but current time does not allow for access to this resource!");
     }
     else {
