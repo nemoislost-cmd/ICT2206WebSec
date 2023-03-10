@@ -187,13 +187,7 @@ $result_countdown = mysqli_query($conn, $query_countdown);
 if (mysqli_num_rows($result_countdown) > 0) {
     while ($row = mysqli_fetch_assoc($result_countdown)) {
         $_SESSION["target_date"] = $row["futuretimestamp"];
-        // Access other columns as needed
-    }
-} else {
-}
-
-
-// Format the date and time
+        // Format the date and time
 $formattedDate = date("M j, Y g:i A", strtotime($_SESSION["target_date"]));
 $currTime = date("M j, Y g:i A");
 if (strtotime($formattedDate) < strtotime($currTime)) {
@@ -235,6 +229,17 @@ if ($_SESSION['day_records'] ==1){
          $_SESSION["daytnotdone"] = 1;
      }
 }
+        // Access other columns as needed
+    }
+} else {
+    $_SESSION["daynotdone"]=1;
+    $_SESSION["nightnotdone"]=1;
+    
+    
+}
+
+
+
     
     
     
