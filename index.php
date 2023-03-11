@@ -203,6 +203,7 @@ if ($_SESSION['day_records'] ==1){
             $_SESSION["nightnotdone"] = 1; // NIGHT RECORDS IS NOT DONE
             $_SESSION["daynotdone"] = 0; // DAY RECORDS IS DONE
             $_SESSION['countdownNight'] = 0;
+            $_SESSION['countdownDay'] = -1;
         }else{
             $_SESSION['countdownNight'] = 1;                                    # day records exist night records dont countdown is still running
              $message = "Night period will be available after $formattedDate";
@@ -213,6 +214,8 @@ if ($_SESSION['day_records'] ==1){
     }else{
         $_SESSION["nightnotdone"] = 0; #both day and night records exist
         $_SESSION["daynotdone"] = 0; #both day and night records exist
+        $_SESSION['countdownDay'] = -1;
+        $_SESSION['countdownNight'] = -1;
     }
 }else{
      if ($_SESSION['night_records'] == 1){ 
@@ -220,6 +223,7 @@ if ($_SESSION['day_records'] ==1){
             $_SESSION["nightnotdone"] = 0; // NIGHT RECORDS IS DONE
             $_SESSION["daynotdone"] = 1; // DAY RECORDS IS NOT DONE
             $_SESSION['countdownDay'] = 0;
+            $_SESSION['countdownDay'] = -1;
          }else{
               $_SESSION['countdownDay'] = 1;
               $message = "Day period will be available after $formattedDate";   
@@ -229,6 +233,8 @@ if ($_SESSION['day_records'] ==1){
      }else{
          $_SESSION["nightnotdone"] = 1;
          $_SESSION["daytnotdone"] = 1;
+         $_SESSION['countdownDay'] = -1;
+        $_SESSION['countdownNight'] = -1;
      }
 }
         // Access other columns as needed
@@ -437,6 +443,7 @@ function checkSessionNight() {
             var secsElement = document.querySelector('.secs .number');
             function sendCountdownReminderEmail(){
                 var xhr = new XMLHttpRequest();
+                
                 xhr.onreadystatechange = function () {
                     if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
                         console.log("email sent");
