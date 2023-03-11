@@ -1,6 +1,6 @@
 <?php
 // Start session
-session_start();
+//session_start();
 
 // Include the necessary files
 require_once 'db.php';
@@ -21,7 +21,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   $username = validate_username($_POST["username"]);
 
   // Validate password
-  $password = validate_password($_POST["password"], "Password", "Login");
+//  $password = validate_password($_POST["password"], "Password", "Login");
+  $password = $_POST["password"];
 
   // If no issues, proceed with trying to login
   if (!isset($message["Error"])){ 
@@ -38,12 +39,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if ($stmt->rowCount() == 1) {
           // Fetch the result
           $row = $stmt->fetch(PDO::FETCH_ASSOC);
+           
           $username = $row["username"];
           $password_hash = $row["password"];
 
           // Verify password
           if (password_verify($password, $password_hash)) {
-            
+            $result_verify = password_verify($password, $password_hash);
             // Start output buffering
             ob_start();
             // Password is correct, start a new session
@@ -74,6 +76,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       unset($stmt);
     }
   }else{
+ 
     // Display an error message if password is not valid
     $message["Error"]["Password"] = "The password you entered was not valid.";
   }
