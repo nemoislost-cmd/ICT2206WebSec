@@ -16,7 +16,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     if (!isset($message["Error"])){
         
         // Check if the username exists in the database
-        $sql = "SELECT email FROM user_accounts WHERE username = :username";
+        $sql = "SELECT email,name FROM user_accounts WHERE username = :username";
 
         if($stmt = $pdo->prepare($sql)){
 
@@ -32,6 +32,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                     // Fetch the result
                     $row = $stmt->fetch(PDO::FETCH_ASSOC);
                     $email = $row["email"];
+                    $name = $row["name"];
                     
                     // Generate a random temporary password
                     $temp_password = bin2hex(random_bytes(6));
@@ -67,8 +68,8 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                             $mail->addAddress($email);
                             
                             $mail->isHTML(true);
-                            $mail->Subject = 'Temporary Password';
-                            $mail->Body = 'Hello,<br><br>Your temporary password is: ' . $temp_password . '<br><br>Please login with this password from now on.<br><br>Thank you.';
+                            $mail->Subject = 'Auth-React Application: New Password';
+                            $mail->Body = 'Hello '.$name.'<br><br>Your new system generated password is: ' . $temp_password . '<br><br>Please login in with this password from now onwards for Auth-React Application.<br><br>Thank you.';
                             
                             if($mail->send()){
 
@@ -76,7 +77,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                                 ob_start();
                                 // Redirect to the login page
                                 session_start();
-                                $_SESSION["Info"]["General"] = "Do check your email for the temporary password to login.";
+                                $_SESSION["Info"]["General"] = "Do check your email for the new password to login.";
                                 header("location: login.php");
                                 // Flush the output buffer and send the header
                                 ob_end_flush();
@@ -114,7 +115,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Forget Password</title>
 
-    <link rel="stylesheet" href="style.css" >
+    <link rel="stylesheet" href="css/style.css" >
 
     <!-- Font Awesome -->
     <link
@@ -170,7 +171,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                 </div>
 
                 <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
-                    <p>Enter your username to receive a temporary password.</p>
+                    <p>Enter your username to receive a new password.</p>
                     <div class="form-outline">
                         <input type="text" name="username" class="form-control"
                                 placeholder="Username from your email" />

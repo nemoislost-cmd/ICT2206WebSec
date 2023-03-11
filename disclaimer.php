@@ -1,52 +1,10 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Disclaimer Page</title>
-	<style>
-body {
-    font-family: "Roboto", sans-serif;
-    margin: 0;
-    padding: 0;
-    background-color: #f7f7f7;
-}
-
-.container {
-    width: 80%;
-    margin: 0 auto;
-    padding: 40px;
-    background-color: #fff;
-    box-shadow: 0 0 10px rgba(0,0,0,0.3);
-    text-align: center;
-}
-
-h1 {
-    font-size: 3rem;
-    margin-bottom: 20px;
-    font-weight: 500;
-}
-
-p {
-    font-size: 1.5rem;
-    margin-bottom: 30px;
-    line-height: 1.5;
-}
-
-button {
-    padding: 10px 20px;
-    font-size: 1.5rem;
-    background-color: #4CAF50;
-    color: #fff;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-
-button:hover {
-    background-color: #3e8e41;
-}
-
-	</style>
+	
+    <title>Disclaimer Page</title>
+    <meta charset="UTF-8">
+     <link href="css/disclaimer.css" rel="stylesheet" type="text/css"/>
 </head>
 <body>
 	<div class="container">

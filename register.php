@@ -36,7 +36,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         // Check if email already exists
         if ($stmt->rowCount() == 1) {
-          $message["Error"]["Email"] = "This email address is already taken.";
+          $message["Error"]["Email"] = "This email address has already been registered..";
         } 
 
       } else {
