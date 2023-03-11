@@ -205,7 +205,7 @@ if ($_SESSION['day_records'] ==1){
             $_SESSION['countdownNight'] = 0;
         }else{
             $_SESSION['countdownNight'] = 1;                                    # day records exist night records dont countdown is still running
-             $message = "Day period will be available after $formattedDate";
+             $message = "Night period will be available after $formattedDate";
              echo $message;
             
         }
