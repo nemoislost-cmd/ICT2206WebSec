@@ -22,31 +22,37 @@ function sanitize_input($user_answer){
     return $user_answer;
 }
 
-function checkUserData(){
+function checkUserData() {
     global $username, $answer, $new_answer, $errorMsg, $success;
     $config = parse_ini_file('../private/db-config.ini');
-    $conn = new mysqli($config['servername'], $config['username'],
-    $config['password'], $config['dbname']);
+    $conn = new mysqli($config['servername'], $config['username'], $config['password'], $config['dbname']);
     if ($conn->connect_error) {
         $errorMsg = "Connection failed: " . $conn->connect_error;
         $success = false;
-    }  else {
-        $stmt = $conn->prepare("SELECT answer 
-            FROM user_accounts 
-            WHERE username=?");
+    } else {
+        $stmt = $conn->prepare("SELECT answer FROM user_accounts WHERE username=?");
         $stmt->bind_param("s", $username);
         $stmt->execute();
         $result = $stmt->get_result();
         if ($result->num_rows == 1) {
             $row = $result->fetch_assoc();
             $answer = $row["answer"];
-            if (strcasecmp($new_answer, $answer) == 0) {
-                $_SESSION["intended_user"]= "yes";
-            } else{
-                $_SESSION["intended_user"]= "no";
+            if (preg_match('/^[a-zA-Z\s]+$/', $user_answer)) {
+                // Compare the sanitized user input with the stored security answer using a case-insensitive comparison.
+                if (strcasecmp($new_answer, $answer) == 0) {
+                    // Answer is correct.
+                    // Do something here, like redirecting to a success page or setting a session variable.
+                    $_SESSION["intended_user"] = "yes";
+                } else {
+                    // Answer is incorrect.
+                    // Do something here, like displaying an error message or redirecting to a failure page.
+                    $_SESSION["intended_user"] = "no";
+                }
+            } else {
+                // Invalid input, do something here
+                $_SESSION["intended_user"] = "no";
             }
-        }
-        else {
+        } else {
             $errorMsg = "User data not found!";
             $success = false;
         }
@@ -54,6 +60,7 @@ function checkUserData(){
     }
     $conn->close();
 }
+
 
 function checkDayData(){
     global $username, $errorMsg, $success;
