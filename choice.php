@@ -15,11 +15,11 @@ if (!empty($_POST["answer"])){
     $_SESSION["answer"] = $new_answer;
 }
 
-function sanitize_input($data){
-    $data = trim($data);
-    $data = stripslashes($data);
-    $data = htmlspecialchars($data);
-    return $data;
+function sanitize_input($user_answer){
+    $user_answer = strtolower(trim(preg_replace('/\s+/', ' ', $user_answer)));
+    $user_answer = stripslashes($user_answer);
+    $user_answer = htmlspecialchars($user_answer);
+    return $user_answer;
 }
 
 function checkUserData(){
@@ -40,10 +40,10 @@ function checkUserData(){
         if ($result->num_rows == 1) {
             $row = $result->fetch_assoc();
             $answer = $row["answer"];
-            if ($answer != $new_answer) {
-                $_SESSION["intended_user"]= "no";
-            } else{
+            if (strcasecmp($new_answer, $answer) == 0) {
                 $_SESSION["intended_user"]= "yes";
+            } else{
+                $_SESSION["intended_user"]= "no";
             }
         }
         else {
