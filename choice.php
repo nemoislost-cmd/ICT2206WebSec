@@ -16,9 +16,13 @@ if (!empty($_POST["answer"])){
 }
 
 function sanitize_input($user_answer){
+    // Remove extra white spaces and convert to lowercase
     $user_answer = strtolower(trim(preg_replace('/\s+/', ' ', $user_answer)));
+    // Remove slashes and HTML entities
     $user_answer = stripslashes($user_answer);
     $user_answer = htmlspecialchars($user_answer);
+    // Remove all non-letter characters
+    $user_answer = preg_replace('/[^a-zA-Z]/', '', $user_answer);
     return $user_answer;
 }
 
@@ -37,7 +41,6 @@ function checkUserData() {
         if ($result->num_rows == 1) {
             $row = $result->fetch_assoc();
             $answer = $row["answer"];
-            if (preg_match('/^[a-zA-Z\s]+$/', $new_answer)) {
                 // Compare the sanitized user input with the stored security answer using a case-insensitive comparison.
                 if (strcasecmp($new_answer, $answer) == 0) {
                     // Answer is correct.
@@ -48,10 +51,7 @@ function checkUserData() {
                     // Do something here, like displaying an error message or redirecting to a failure page.
                     $_SESSION["intended_user"] = "no";
                 }
-            } else {
-                // Invalid input, do something here
-                $_SESSION["intended_user"] = "no";
-            }
+            
         } else {
             $errorMsg = "User data not found!";
             $success = false;
