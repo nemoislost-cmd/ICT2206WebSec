@@ -75,14 +75,14 @@ if (!isset($_SESSION["List of Questions"])) {
   shuffle($questions);
 
   // Add 3 question into the list stored inside the session
-//  $_SESSION["List of Questions"] = $selected_questions = array_slice(array_map("validate_question_answer",$questions), 0, 3);
+  // $_SESSION["List of Questions"] = $selected_questions = array_slice(array_map("validate_question_answer",$questions), 0, 3);
   $_SESSION["List of Questions"] = $selected_questions = array_slice($questions, 0, 3);
 }
 
 // Check if form is submitted
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Get selected question and user's answer
-//    $selected_question = validate_question_answer($_POST["question"]);
+    // $selected_question = validate_question_answer($_POST["question"]);
     $selected_question = $_POST["question"];
     $user_answer = validate_question_answer($_POST["answer"], "Answer");
 	
@@ -112,7 +112,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Attempt to execute the prepared statement
         if ($stmt->execute()) {
           // Update successful
-//          echo "User's security question and answer updated successfully.";
+          // echo "User's security question and answer updated successfully.";
 
           // Redirect to index.php
           header("Location: index.php");
@@ -131,10 +131,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   }
 }    
 
-if (isset($message["Error"])){
-	// Set the question back instead of retrieve a new one
-	$selected_questions = $_SESSION["List of Questions"];
-}
 $selected_questions = $_SESSION["List of Questions"];
 
 ?>

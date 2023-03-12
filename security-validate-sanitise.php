@@ -55,24 +55,23 @@ function validate_email($email) {
 function validate_password($password, $str = "Password", $site = "Normal") {
     global $message;
 
-    if (empty($password)) {
-        $message["Error"][$str] = "Please enter a password.";
-    } else {
-        $password = filter_var(trim($password), FILTER_SANITIZE_STRING);
-        if (strlen($password) < 8) {
-            $message["Error"][$str] = "Password must have at least 8 characters.";
-        } elseif ($site != "Normal") {
+  if (empty($password)) {
+    $message["Error"][$str] = "Please enter a password.";
+  } else {
+    $password = filter_var(trim($password), FILTER_SANITIZE_STRING);
+    if (strlen($password) < 8) {
+      $message["Error"][$str] = "Password must have at least 8 characters.";
+    }elseif ( $site != "Normal"){
+      
+      //Need to cater to the newly generated password at Login Page
+      if (!preg_match('/^[0-9a-f]{12}$/i', $password) && !preg_match('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/', $password)){
+        $message["Error"]["Password"] = "The password you entered was not valid.";
+      }
 
-            //Need to cater to the newly generated password at Login Page
-            if (!preg_match('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/', $password)) {
-                $message["Error"][$str] = "Password must have at least a uppercase letter, a lowercase letter and a number. No special characters is allowed";
-            } elseif (!preg_match('/^[0-9a-f]{12}$/i', $password)) {
-                $message["Error"]["Password"] = "The password you entered was not valid.";
-            }
-        } elseif (!preg_match('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/', $password)) {
-            $message["Error"][$str] = "Password must have at least a uppercase letter, a lowercase letter and a number. No special characters is allowed";
-        }
+    }elseif (!preg_match('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/', $password)) {
+      $message["Error"][$str] = "Password must have at least a uppercase letter, a lowercase letter and a number. No special characters is allowed";
     }
+  }
 
     return $password;
 }
@@ -86,7 +85,7 @@ function validate_question_answer($input_string, $type = "Question") {
     } else {
 
 //        $input_string = filter_var(trim($input_string), FILTER_SANITIZE_STRING);
-//        if (!preg_match('/^[a-zA-Z0-9\s\']+$/', $input_string)) {
+//        if (!preg_match("/^[a-zA-Z0-9\s',?-]+$/', $input_string)) {
 //            if ($type != "Question") {
 //                $message["Error"][$type] = $type . " can only contain letters and whitespace, numbers and single quotes.";
 //            } else {

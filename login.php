@@ -21,8 +21,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   $username = validate_username($_POST["username"]);
 
   // Validate password
-//  $password = validate_password($_POST["password"], "Password", "Login");
-  $password = $_POST["password"];
+  $password = validate_password($_POST["password"], "Password", "Login");
+  // $password = $_POST["password"];
 
   // If no issues, proceed with trying to login
   if (!isset($message["Error"])){ 
@@ -45,7 +45,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
           // Verify password
           if (password_verify($password, $password_hash)) {
-            $result_verify = password_verify($password, $password_hash);
+            // $result_verify = password_verify($password, $password_hash);
             // Start output buffering
             ob_start();
             // Password is correct, start a new session
