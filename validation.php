@@ -19,8 +19,9 @@ if (($_SERVER["REQUEST_METHOD"] == "POST")) {
         //correct answer
         unset($images_with_answers[$selected_image]);
         array_push($_SESSION["captcha_data"], $time_taken);
+        array_push($_SESSION["captcha_questions_completed"], $selected_image);
         $num_test_completed++;
-
+        
         if ($num_test_completed == 5) {
             $_SESSION["num_of_tries"] = 0;
             // Redirect Link to color test

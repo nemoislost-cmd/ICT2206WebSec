@@ -7,6 +7,7 @@ if (!isset($_SESSION['session_completed_test'])) {
     $_SESSION["device"] = "mouse";
     $_SESSION["num_of_tries"] = 0;
     $_SESSION["captcha_data"] = array();
+    $_SESSION["captcha_questions_completed"] = array();
 }
 
 if (!isset($_SESSION["session_image_answer"])) {
