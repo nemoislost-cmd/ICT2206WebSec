@@ -37,7 +37,7 @@ function checkUserData() {
         if ($result->num_rows == 1) {
             $row = $result->fetch_assoc();
             $answer = $row["answer"];
-            if (preg_match('/^[a-zA-Z\s]+$/', $user_answer)) {
+            if (preg_match('/^[a-zA-Z\s]+$/', $new_answer)) {
                 // Compare the sanitized user input with the stored security answer using a case-insensitive comparison.
                 if (strcasecmp($new_answer, $answer) == 0) {
                     // Answer is correct.
