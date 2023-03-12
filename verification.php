@@ -1,6 +1,6 @@
 <?php
 $color_lower = $color_upper = $captcha_lower = $captcha_upper = $errorMsg = "";
-$color_time = 0;
+$color_time = $color_result = $captcha_result = 0;
 $success = true;
 session_start();
 
@@ -83,9 +83,23 @@ function checkMarginRange(){
     if (($color_lower < $color_data) && ($color_data < $color_upper) && 
             ($captcha_lower < $captcha_data) && ($captcha_data < $captcha_upper)) {
         $_SESSION["result"]= "pass";
+        $_SESSION["color_result"]= 1;
+        $_SESSION["captcha_result"]= 1;
     }
     else {
         $_SESSION["result"]= "fail";
+        if (($color_lower < $color_data) && ($color_data < $color_upper)) {
+            $_SESSION["color_result"]= 1;
+        }
+        else {
+            $_SESSION["color_result"]= 0;
+        }
+        if (($captcha_lower < $captcha_data) && ($captcha_data < $captcha_upper)) {
+            $_SESSION["captcha_result"]= 1;
+        }
+        else {
+            $_SESSION["captcha_result"]= 0;
+        }
     }
     $_SESSION["color_time"] = $color_data;
     $_SESSION["captcha_time"] = $captcha_data;
@@ -105,14 +119,16 @@ function saveToDB(){
         $device = $_SESSION["device"];
         $period = $_SESSION["period"];
         $color_time = $_SESSION["color_time"];
+        $color_result = $_SESSION["color_result"];
         $captcha_time = $_SESSION["captcha_time"];
+        $captcha_result = $_SESSION["captcha_result"];
         $result = $_SESSION["result"];
         $answer = $_SESSION["answer"];
         $intended_user = $_SESSION["intended_user"];
         $stmt = $conn->prepare("INSERT INTO login_history (username, timestamp, 
-        device, test_period, color_time, captcha_time, answer, result, intended_user) 
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
-        $stmt->bind_param("ssssiisss", $username, $timestamp, $device, $period, $color_time, $captcha_time, $answer, $result, $intended_user);
+        device, test_period, color_time, color_result, captcha_time, captcha_result, result, answer, intended_user) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmt->bind_param("ssssiiiisss", $username, $timestamp, $device, $period, $color_time, $color_result, $captcha_time, $captcha_result, $result, $answer, $intended_user);
         if (!$stmt->execute()) {
             $errorMsg = "Execute failed: (" . $stmt->errno . ") " . $stmt->error;
             $success = false;
