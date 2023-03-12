@@ -86,7 +86,7 @@ session_start();
         }
         
         if ($total_captcha_qustions == 10){
-            insert_aptcha_questions($captcha_questions);
+            insert_captcha_questions($captcha_questions);
         }
 
         require_once('db_connect.php');
@@ -302,7 +302,7 @@ session_start();
             mysqli_close($conn);
         }
 
-        function insert_aptcha_questions($captcha_questions) {
+        function insert_captcha_questions($captcha_questions) {
             $value1 = $_SESSION["username"];
             $value2 = $captcha_questions[0];
             $value3 = $captcha_questions[1];
@@ -326,7 +326,7 @@ session_start();
                 die("Connection failed: " . mysqli_connect_error());
             }
             $stmt1 = $conn->prepare("INSERT INTO captcha_completed_questions (username,Q1,Q2,Q3,Q4,Q5,Q6,Q7,Q8,Q9,Q10) VALUES (?,?,?,?,?,?,?,?,?,?,?)");
-            $stmt1->bind_param("ssssss", $value1, $value2, $value3, $value4, $value5, $value6, $value7, $value8, $value9, $value10, $value11);
+            $stmt1->bind_param("sssssssssss", $value1, $value2, $value3, $value4, $value5, $value6, $value7, $value8, $value9, $value10, $value11);
             $stmt1->execute();
         }
 

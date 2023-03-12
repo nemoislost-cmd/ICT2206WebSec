@@ -19,11 +19,11 @@ if (!isset($username)) {
 }
 
 // Check if user exist and get their security questions and answers
-if (!isset($message["Error"]["Username"])){
+if (!isset($message["Error"]["Username"])) {
 
     // Prepare an insert statement
     $sql = "SELECT question, answer FROM user_accounts WHERE username = :username";
-    
+
     if ($stmt = $pdo->prepare($sql)) {
         // Bind the values to the prepared statement
         $stmt->bindValue(":username", $username, PDO::PARAM_STR);
@@ -44,16 +44,13 @@ if (!isset($message["Error"]["Username"])){
                     header("Location: security-question.php");
                     exit();
                 }
-                
             } else {
                 // Display an error message if username doesn't exist
                 // $_SESSION["Error"]["General"]  = "No account found with that username.";
-                
                 // Redirect to home page
                 header("location: login.php");
                 exit();
             }
-
         }
 
         // Close statement
@@ -71,7 +68,6 @@ if (isset($_POST["logout"])) {
     header("Location: login.php");
     exit();
 }
-
 ?>
 
 <!DOCTYPE html>
@@ -125,138 +121,150 @@ if (isset($_POST["logout"])) {
         <div class="container">
             <h1>Welcome, <?php echo $_SESSION["username"]; ?>!</h1>
             <h2> 
-<?php
-require_once "db_connect.php";
-$daysql_color =
-    "SELECT * FROM color_data WHERE username='" .
-    $_SESSION["username"] .
-    "' AND test_period='day' ";
-$daysql_captcha =
-    "SELECT * FROM captcha_data WHERE username='" .
-    $_SESSION["username"] .
-    "' AND test_period='day' ";
-$nightsql_color =
-    "SELECT * FROM color_data WHERE username='" .
-    $_SESSION["username"] .
-    "' AND test_period='night' ";
-$nightsql_captcha =
-    "SELECT * FROM captcha_data WHERE username='" .
-    $_SESSION["username"] .
-    "' AND test_period='night' ";
-$dayresult_color = mysqli_query($conn, $daysql_color);
-$nightresult_color = mysqli_query($conn, $nightsql_color);
-$dayresult_captcha = mysqli_query($conn, $daysql_captcha);
-$nightresult_captcha = mysqli_query($conn, $nightsql_captcha);
-$currentHour = date("H");
-if (
-    mysqli_num_rows($dayresult_color) == 0 &&
-    mysqli_num_rows($dayresult_captcha) == 0
-) {
-    $_SESSION["day_records"] = 0;
-    echo "DAY RECORDS NOT FOUND. <br>";
-} else {
-    $_SESSION["day_records"] = 1;
-    echo "DAY RECORDS PRESENT <br>";
-}
+                <?php
+                require_once "db_connect.php";
+                $daysql_color = "SELECT * FROM color_data WHERE username='" .
+                        $_SESSION["username"] .
+                        "' AND test_period='day' ";
+                $daysql_captcha = "SELECT * FROM captcha_data WHERE username='" .
+                        $_SESSION["username"] .
+                        "' AND test_period='day' ";
+                $nightsql_color = "SELECT * FROM color_data WHERE username='" .
+                        $_SESSION["username"] .
+                        "' AND test_period='night' ";
+                $nightsql_captcha = "SELECT * FROM captcha_data WHERE username='" .
+                        $_SESSION["username"] .
+                        "' AND test_period='night' ";
+                $dayresult_color = mysqli_query($conn, $daysql_color);
+                $nightresult_color = mysqli_query($conn, $nightsql_color);
+                $dayresult_captcha = mysqli_query($conn, $daysql_captcha);
+                $nightresult_captcha = mysqli_query($conn, $nightsql_captcha);
+                $currentHour = date("H");
+                if (
+                        mysqli_num_rows($dayresult_color) == 0 &&
+                        mysqli_num_rows($dayresult_captcha) == 0
+                ) {
+                    $_SESSION["day_records"] = 0;
+                    echo "DAY RECORDS NOT FOUND. <br>";
+                } else {
+                    $_SESSION["day_records"] = 1;
+                    echo "DAY RECORDS PRESENT <br>";
+                }
 
-if (
-    mysqli_num_rows($nightresult_color) == 0 &&
-    mysqli_num_rows($nightresult_captcha) == 0
-) {
-    $_SESSION["night_records"] = 0;
-    echo "NIGHT RECORDS NOT FOUND <br>";
-} else {
-    $_SESSION["night_records"] = 1;
-    echo "NIGHT RECORDS PRESENT <br>";
-}
-echo "Day Period is from 7am to 7pm <br>";
-echo "Night Period is from 7pm to 7am <br>";
+                if (
+                        mysqli_num_rows($nightresult_color) == 0 &&
+                        mysqli_num_rows($nightresult_captcha) == 0
+                ) {
+                    $_SESSION["night_records"] = 0;
+                    echo "NIGHT RECORDS NOT FOUND <br>";
+                } else {
+                    $_SESSION["night_records"] = 1;
+                    echo "NIGHT RECORDS PRESENT <br>";
+                }
+                echo "Day Period is from 7am to 7pm <br>";
+                echo "Night Period is from 7pm to 7am <br>";
 
-if ($currentHour >= 7 && $currentHour < 19) {
-    echo "Currently in Day Period.   <br> ";
-    $_SESSION["time_period"] = "day";
-} else {
-    echo "Currently Night Period. <br> ";
-    $_SESSION["time_period"] = "night";
-}
-$query_countdown =
-    "SELECT futuretimestamp FROM color_testcase WHERE username='" .
-    $_SESSION["username"] .
-    "' AND device='trackpad'";
-$result_countdown = mysqli_query($conn, $query_countdown);
-if (mysqli_num_rows($result_countdown) > 0) {
-    while ($row = mysqli_fetch_assoc($result_countdown)) {
-        $_SESSION["target_date"] = $row["futuretimestamp"];
-        // Format the date and time
-$formattedDate = date("M j, Y g:i A", strtotime($_SESSION["target_date"]));
-$currTime = date("M j, Y g:i A");
-if (strtotime($formattedDate) < strtotime($currTime)) {
-    $_SESSION['countdownover']=1;
-} else {
-    $_SESSION['countdownover']=0;
-    // do something else
-}
+                if ($currentHour >= 7 && $currentHour < 19) {
+                    echo "Currently in Day Period.   <br> ";
+                    $_SESSION["time_period"] = "day";
+                } else {
+                    echo "Currently Night Period. <br> ";
+                    $_SESSION["time_period"] = "night";
+                }
+                $query_countdown = "SELECT futuretimestamp FROM color_testcase WHERE username='" .
+                        $_SESSION["username"] .
+                        "' AND device='trackpad'";
+                $result_countdown = mysqli_query($conn, $query_countdown);
+                if (mysqli_num_rows($result_countdown) > 0) {
+                    while ($row = mysqli_fetch_assoc($result_countdown)) {
+                        $_SESSION["target_date"] = $row["futuretimestamp"];
+                        // Format the date and time
+                        $formattedDate = date("M j, Y g:i A", strtotime($_SESSION["target_date"]));
+                        $currTime = date("M j, Y g:i A");
+                        if (strtotime($formattedDate) < strtotime($currTime)) {
+                            $_SESSION['countdownover'] = 1;
+                        } else {
+                            $_SESSION['countdownover'] = 0;
+                            // do something else
+                        }
 
-if ($_SESSION['day_records'] ==1){
-    if ($_SESSION['night_records'] ==0){
-        if ($_SESSION['countdownover']==1){ # day records exist night records dont countdown is ovver
-            $_SESSION["nightnotdone"] = 1; // NIGHT RECORDS IS NOT DONE
-            $_SESSION["daynotdone"] = 0; // DAY RECORDS IS DONE
-            $_SESSION['countdownNight'] = 0;
-            $_SESSION['countdownDay'] = -1;
-        }else{
-            $_SESSION['countdownNight'] = 1;                                    # day records exist night records dont countdown is still running
-             $message = "Night period will be available after $formattedDate";
-             echo $message;
-            
-        }
-        
-    }else{
-        $_SESSION["nightnotdone"] = 0; #both day and night records exist
-        $_SESSION["daynotdone"] = 0; #both day and night records exist
-        $_SESSION['countdownDay'] = -1;
-        $_SESSION['countdownNight'] = -1;
-    }
-}else{
-     if ($_SESSION['night_records'] == 1){ 
-         if ($_SESSION['countdownover']==1){ # day records dont exists night records exist countdown is over
-            $_SESSION["nightnotdone"] = 0; // NIGHT RECORDS IS DONE
-            $_SESSION["daynotdone"] = 1; // DAY RECORDS IS NOT DONE
-            $_SESSION['countdownDay'] = 0;
-            $_SESSION['countdownDay'] = -1;
-         }else{
-              $_SESSION['countdownDay'] = 1;
-              $message = "Day period will be available after $formattedDate";   
-              echo $message ;                  # day records do not exist night records exist countdown is still running 
-         }
-            
-     }else{
-         $_SESSION["nightnotdone"] = 1;
-         $_SESSION["daytnotdone"] = 1;
-         $_SESSION['countdownDay'] = -1;
-        $_SESSION['countdownNight'] = -1;
-     }
-}
-        // Access other columns as needed
-    }
-} else {
-    $_SESSION["daynotdone"]=1;
-    $_SESSION["nightnotdone"]=1;
-    $_SESSION["countdownover"] = -1;
-    $_SESSION['countdownNight'] = -1;
-    $_SESSION['countdownDay'] = -1;
-    
-    
-}
+                        if ($_SESSION['day_records'] == 1) {
+                            if ($_SESSION['night_records'] == 0) {
+                                if ($_SESSION['countdownover'] == 1) { # day records exist night records dont countdown is ovver
+                                    $_SESSION["nightnotdone"] = 1; // NIGHT RECORDS IS NOT DONE
+                                    $_SESSION["daynotdone"] = 0; // DAY RECORDS IS DONE
+                                    $_SESSION['countdownNight'] = 0;
+                                } else {
+                                    $_SESSION['countdownNight'] = 1;                                    # day records exist night records dont countdown is still running
+                                    $message = "Night period will be available after $formattedDate";
+                                    echo $message;
+                                }
+                            } else {
+                                $_SESSION["nightnotdone"] = 0; #both day and night records exist
+                                $_SESSION["daynotdone"] = 0; #both day and night records exist
+                            }
+                        } else {
+                            if ($_SESSION['night_records'] == 1) {
+                                if ($_SESSION['countdownover'] == 1) { # day records dont exists night records exist countdown is over
+                                    $_SESSION["nightnotdone"] = 0; // NIGHT RECORDS IS DONE
+                                    $_SESSION["daynotdone"] = 1; // DAY RECORDS IS NOT DONE
+                                    $_SESSION['countdownDay'] = 0;
+                                } else {
+                                    $_SESSION['countdownDay'] = 1;
+                                    $message = "Day period will be available after $formattedDate";
+                                    echo $message;                  # day records do not exist night records exist countdown is still running 
+                                }
+                            } else {
+                                $_SESSION["nightnotdone"] = 1;
+                                $_SESSION["daytnotdone"] = 1;
+                            }
+                        }
+                        // Access other columns as needed
+                    }
+                } else {
+                    $_SESSION["daynotdone"] = 1;
+                    $_SESSION["nightnotdone"] = 1;
+                    $_SESSION["countdownover"] = -1;
+                    $_SESSION['countdownNight'] = -1;
+                    $_SESSION['countdownDay'] = -1;
+                }
 
+// SQL query to retrieve the questions that the user had completed for captcha
+                $check_captcha_records = "SELECT Q1,Q2,Q3,Q4,Q5,Q6,Q7,Q8,Q9,Q10 FROM `captcha_completed_questions` WHERE username = '" .
+                        $_SESSION["username"] . "'";
 
+                // Return result from db
+                $returned_result = mysqli_query($conn, $check_captcha_records);
+                $total_rows = mysqli_num_rows($returned_result);
+                // If there is data that exist enter here
+                if ($total_rows > 0) {
+                    $_SESSION["captcha_questions_completed_db"] = array();
 
-    
-    
-    
+                    while ($row = mysqli_fetch_assoc($returned_result)) {
+                        $q1 = $row["Q1"];
+                        $q2 = $row["Q2"];
+                        $q3 = $row["Q3"];
+                        $q4 = $row["Q4"];
+                        $q5 = $row["Q5"];
+                        $q6 = $row["Q6"];
+                        $q7 = $row["Q7"];
+                        $q8 = $row["Q8"];
+                        $q9 = $row["Q9"];
+                        $q10 = $row["Q10"];
+                        array_push($_SESSION["captcha_questions_completed_db"], $q1, $q2, $q3, $q4, $q5, $q6, $q7, $q8, $q9, $q10);
+                    }
+                }
 
+                // Close the database connection
+                mysqli_close($conn);
 
-?>
+                // Check if user came from the captcha challenge page and if true, unset the completed_test 
+                if ((isset($_SESSION["captcha_challenge_page"]) && ($_SESSION["captcha_challenge_page"] === TRUE))) {
+                    unset($_SESSION["session_completed_test"]);
+                    unset($_SESSION["session_image_answer"]);
+                    unset($_SESSION["current_questions_completed"]);
+                }
+                ?>
 
             </h2>
             <div class="logout-container">
@@ -398,63 +406,60 @@ if ($_SESSION['day_records'] ==1){
         <script>
 
             //const targetDateElem = document.querySelector(".target-date");
-function checkSessionDay() {
-    var curr_period = '<?= $_SESSION["time_period"] ?>';
-    var day_records = '<?= $_SESSION["day_records"] ?>';
-    var day_countdown = '<?= $_SESSION["daynotdone"] ?>';
-    var countdownStatus = '<?= $_SESSION['countdownDay'] ?>';
+            function checkSessionDay() {
+                var curr_period = '<?= $_SESSION["time_period"] ?>';
+                var day_records = '<?= $_SESSION["day_records"] ?>';
+                var day_countdown = '<?= $_SESSION["daynotdone"] ?>';
+                var countdownStatus = '<?= $_SESSION['countdownDay'] ?>';
 
-    if (curr_period === "day" && day_records === '0') {
-        window.location.href = 'captcha_challenge.php';
-    } else if (day_records === '1') {
-        alert("403 Forbidden. Records already exist!");
-    } else if (countdownStatus === '1') {
-        alert("403 Forbidden. Wait for the countdown to finish to access this resource!");
-    } else if (countdownStatus === '0') {
-        alert("403 Forbidden. Countdown is over but current time does not allow for access to this resource!");
-    }
-    else {
-        alert("403 Forbidden. This resource cannot be accessed at this time!");
-    }
-}
+                if (curr_period === "day" && day_records === '0') {
+                    window.location.href = 'captcha_challenge.php';
+                } else if (day_records === '1') {
+                    alert("403 Forbidden. Records already exist!");
+                } else if (countdownStatus === '1') {
+                    alert("403 Forbidden. Wait for the countdown to finish to access this resource!");
+                } else if (countdownStatus === '0') {
+                    alert("403 Forbidden. Countdown is over but current time does not allow for access to this resource!");
+                } else {
+                    alert("403 Forbidden. This resource cannot be accessed at this time!");
+                }
+            }
 
-function checkSessionNight() {
-    var curr_period = '<?= $_SESSION["time_period"] ?>';
-    var night_records = '<?= $_SESSION["night_records"] ?>';
-    var night_countdown = '<?= $_SESSION["nightnotdone"] ?>';
-    var countdownStatus = '<?= $_SESSION['countdownNight'] ?>';
-    if (curr_period === "night" && night_records === '0') {
-        window.location.href = 'captcha_challenge.php';
-    } else if (night_records === '1') {
-        alert("403 Forbidden. Records already exist!");
-    } else if (countdownStatus === '1') {
-        alert("403 Forbidden. Wait for the countdown to finish to access this resource!");
-    } else if (countdownStatus === '0') {
-        alert("403 Forbidden. Countdown is over but current time does not allow for access to this resource!");
-    }
-    else {
-        alert("403 Forbidden. This resource cannot be accessed at this time!");
-    }
-}
+            function checkSessionNight() {
+                var curr_period = '<?= $_SESSION["time_period"] ?>';
+                var night_records = '<?= $_SESSION["night_records"] ?>';
+                var night_countdown = '<?= $_SESSION["nightnotdone"] ?>';
+                var countdownStatus = '<?= $_SESSION['countdownNight'] ?>';
+                if (curr_period === "night" && night_records === '0') {
+                    window.location.href = 'captcha_challenge.php';
+                } else if (night_records === '1') {
+                    alert("403 Forbidden. Records already exist!");
+                } else if (countdownStatus === '1') {
+                    alert("403 Forbidden. Wait for the countdown to finish to access this resource!");
+                } else if (countdownStatus === '0') {
+                    alert("403 Forbidden. Countdown is over but current time does not allow for access to this resource!");
+                } else {
+                    alert("403 Forbidden. This resource cannot be accessed at this time!");
+                }
+            }
 
 
             var hoursElement = document.querySelector('.hours .number');
             var minsElement = document.querySelector('.mins .number');
             var secsElement = document.querySelector('.secs .number');
-            function sendCountdownReminderEmail(){
+            function sendCountdownReminderEmail() {
                 var xhr = new XMLHttpRequest();
-                
                 xhr.onreadystatechange = function () {
                     if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
                         console.log("email sent");
                         var response = xhr.responseText;
                         console.log(response);
-                        
+
                     }
-              };
-              xhr.open('GET', 'reminderMail.php');
-              xhr.send();
-          }
+                };
+                xhr.open('GET', 'reminderMail.php');
+                xhr.send();
+            }
             // Make an AJAX request to the PHP script to get the remaining time
             function updateCountdown() {
                 var xhr = new XMLHttpRequest();
@@ -468,9 +473,9 @@ function checkSessionNight() {
                             hoursElement.textContent = '00';
                             minsElement.textContent = '00';
                             secsElement.textContent = '00';
-                            
+
                             sendCountdownReminderEmail();
-                            
+
                         } else {
                             var hours = Math.floor(remainingTime / 3600);
                             var mins = Math.floor((remainingTime % 3600) / 60);
