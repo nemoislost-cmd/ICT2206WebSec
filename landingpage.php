@@ -19,17 +19,12 @@ if (!isset($_SESSION["username"])) {
         include "nav.php";
         ?>
         <div class="container">
-    <div class="row justify-content-center">
-      <div class="col-md-6">
-        <div class="card shadow-sm">
-          <div class="card-body">
+    
             <h1><span>I'm</span> Ice Bear.</h1>
 			<p>The Strongest, The Cleverest</p>
 			<img src="images/Ice_bear_slay.jpg" alt="boy" width="992" height="1108">
+
         </div>
-      </div>
-    </div>
-  </div>
         <?php
             include "footer.php";
         ?>

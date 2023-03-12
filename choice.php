@@ -76,7 +76,7 @@ function checkDayData(){
         $stmt->execute();
         $result = $stmt->get_result();
         if ($result->num_rows < 4) {
-            $errorMsg = "Day data not found!";
+            $errorMsg = "Test data incomplete!";
             $success = false;
         }
         $stmt->close();
@@ -104,7 +104,7 @@ function checkNightData(){
         $stmt->execute();
         $result = $stmt->get_result();
         if ($result->num_rows < 4) {
-            $errorMsg = "Night data not found!";
+            $errorMsg = "Test data incomplete!";
             $success = false;
         }
         $stmt->close();
@@ -132,7 +132,7 @@ function checkTrackpadData(){
         $stmt->execute();
         $result = $stmt->get_result();
         if ($result->num_rows < 4) {
-            $errorMsg = "Trackpad data incomplete!";
+            $errorMsg = "Test data incomplete!";
             $success = false;
         }
         $stmt->close();
@@ -160,7 +160,7 @@ function checkMouseData(){
         $stmt->execute();
         $result = $stmt->get_result();
         if ($result->num_rows < 4) {
-            $errorMsg = "Mouse data incomplete!";
+            $errorMsg = "Test data incomplete!";
             $success = false;
         }
         $stmt->close();

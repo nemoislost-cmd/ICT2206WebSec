@@ -46,7 +46,7 @@ if (!isset($_SESSION["username"])) {
             <form id ="color-data" action="verification.php" method ="post" onsubmit ="return sendData(event)">
             <input type ="hidden" name="data" id="data" value="">
             <input type ="hidden" name="timestamp" id="timestamp" value="">
-            <button class="button" onclick="sendData(event)" type="submit">Next</button>
+            <button class="button" onclick="sendData(event)" type="submit">Finish</button>
             </form>
         </div>
         <script>
