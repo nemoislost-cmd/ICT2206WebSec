@@ -1,16 +1,13 @@
 <?php
     
-    $host = "localhost";
-    $username = "authreact";
-    $password = "authreact_dba";
-    $dbname = "Adapt_2_survive";
     
-    /*
-    $host = "localhost"; // database hostname
-    $dbname = "authreact"; // database name
-    $username = "authreact_dba"; // database username
-    $password = "Adapt_2_survive"; // database password
-    */
+    $host = "CHANGETOYOURS";
+    $username = "CHANGETOYOURS";
+    $password = "CHANGETOYOURS";
+    $dbname = "CHANGETOYOURS";
+    
+    
+
 // connect to the database using PDO
 try {
     $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8", $username, $password);
