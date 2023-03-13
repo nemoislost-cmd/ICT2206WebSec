@@ -40,7 +40,7 @@ function checkUserData() {
         $result = $stmt->get_result();
         if ($result->num_rows == 1) {
             $row = $result->fetch_assoc();
-            $answer = $row["answer"];
+            $answer = sanitize_input($row["answer"]);
                 // Compare the sanitized user input with the stored security answer using a case-insensitive comparison.
                 if (strcasecmp($new_answer, $answer) == 0) {
                     // Answer is correct.
