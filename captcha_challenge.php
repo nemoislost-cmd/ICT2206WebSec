@@ -21,7 +21,7 @@ if (!isset($_SESSION["session_image_answer"])) {
         "images/captcha_images/question4.jpg" => array("question" => "Find the spotless dog", "min_x" => 477, "max_x" => 514, "min_y" => 61, "max_y" => 179),
         "images/captcha_images/question5.jpg" => array("question" => "Find the catus", "min_x" => 479, "max_x" => 524, "min_y" => 56, "max_y" => 128),
         "images/captcha_images/question6.jpg" => array("question" => "Find the ninja", "min_x" => 313, "max_x" => 375, "min_y" => 48, "max_y" => 176),
-        "images/captcha_images/question7.jpg" => array("question" => "Find the red hangbag", "min_x" => 373, "max_x" => 405, "min_y" => 332, "max_y" => 375),
+        "images/captcha_images/question7.jpg" => array("question" => "Find the red handbag", "min_x" => 373, "max_x" => 405, "min_y" => 332, "max_y" => 375),
         "images/captcha_images/question8.jpg" => array("question" => "Find the pink hairdryer", "min_x" => 371, "max_x" => 415, "min_y" => 263, "max_y" => 284),
         "images/captcha_images/question9.jpg" => array("question" => "Find the yellow pillow", "min_x" => 357, "max_x" => 405, "min_y" => 228, "max_y" => 265),
         "images/captcha_images/question10.jpg" => array("question" => "Find the sliver dustbin", "min_x" => 370, "max_x" => 398, "min_y" => 368, "max_y" => 423),
@@ -39,16 +39,16 @@ if (!isset($_SESSION["session_image_answer"])) {
         "images/captcha_images/question22.jpg" => array("question" => "Find Perry the platypus", "min_x" => 230, "max_x" => 349, "min_y" => 383, "max_y" => 424),
         "images/captcha_images/question23.jpg" => array("question" => "Find Spongebob", "min_x" => 241, "max_x" => 343, "min_y" => 330, "max_y" => 404)
     );
-    
+
     // Removing exisiting completed questions from the array of $images_with_answers
-    if (isset($_SESSION["captcha_questions_completed_db"])){
+    if (isset($_SESSION["captcha_questions_completed_db"])) {
         $completed_question_array = $_SESSION["captcha_questions_completed_db"];
         $total_completed_questions = count($completed_question_array);
-        for ($i = 0; $i != $total_completed_questions; $i ++){
+        for ($i = 0; $i != $total_completed_questions; $i++) {
             unset($images_with_answers[$completed_question_array[$i]]);
-        } 
+        }
     }
-    
+
     $_SESSION["session_image_answer"] = $images_with_answers;
     // Select a random image from the list using array_rand() function
     $random_image = array_rand($images_with_answers);
@@ -56,14 +56,23 @@ if (!isset($_SESSION["session_image_answer"])) {
     // To set $_SESSION["session_image_slected"] to $random_image
     // $_SESSION["session_image_selected"] is for storing the value of the image that was selected using the array random function 
     $_SESSION["session_image_selected"] = $random_image;
-    
+
     // $question value is grabbing from the $images_with_answer array using $random_image to the the value in question
     $question = $images_with_answers[$random_image]["question"];
-
-} else if (isset($_SESSION['success'])) {
+} else if ((isset($_SESSION["success"])) && (!isset($_SESSION["completed"]))) {
     echo "<script>alert('Congratulations! You got the correct answer!');</script>";
     // Unset the session variable
     unset($_SESSION['success']);
+    $_SESSION["num_of_tries"] = 0;
+    $images_with_answers = $_SESSION["session_image_answer"];
+    $random_image = array_rand($images_with_answers);
+    $question = $_SESSION["session_image_answer"][$random_image]["question"];
+    $_SESSION["session_image_selected"] = $random_image;
+} else if ((isset($_SESSION["success"])) && (isset($_SESSION["completed"]))) {
+    // Unset the session variable
+    unset($_SESSION["completed"]);
+    unset($_SESSION["success"]);
+    unset($_SESSION["session_image_answer"][$_SESSION["session_image_selected"]]); 
     $_SESSION["num_of_tries"] = 0;
     $images_with_answers = $_SESSION["session_image_answer"];
     $random_image = array_rand($images_with_answers);
@@ -89,15 +98,6 @@ else if (isset($_SESSION['failure'])) {
         $question = $_SESSION["session_image_answer"][$random_image]["question"];
         echo "<script>alert('$remaining_tries tries left');</script>";
     }
-} else {
-    $images_with_answers = $_SESSION["session_image_answer"];
-    $random_image = array_rand($images_with_answers);
-    $current_question = $_SESSION["session_image_selected"];
-    while ($random_image == $current_question) {
-        $random_image = array_rand($images_with_answers);
-    }
-    $question = $_SESSION["session_image_answer"][$random_image]["question"];
-    $_SESSION["session_image_selected"] = $random_image;
 }
 ?>
 
