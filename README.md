@@ -14,5 +14,9 @@ This POC project is focusing on the last factor which is *Inherence Factor* as t
 * Color test 
 * Image test  
 
+## Creation of database tables
+To create your own database tables, can refer to <https://github.com/nemoislost-cmd/ICT2206WebSec/blob/main/database_creation.txt>
+
+Or just copy paste from <https://github.com/nemoislost-cmd/ICT2206WebSec/blob/main/database_creation.txt> into your SQL Query to generate the tables
 
 Youtube Demo Link : https://youtu.be/-Dc-pARk3lk
